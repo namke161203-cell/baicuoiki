@@ -18,11 +18,27 @@ Dự án đã triển khai và hoàn thiện các chức năng và cấu trúc s
 
 ### 3. Chức năng Quản trị (Admin-side)
 - Quản lý sản phẩm (`AdminProductController.php`): Các chức năng thêm, sửa, xóa, và liệt kê các sản phẩm dành cho admin.
+- **Trang chủ Admin Dashboard (`AdminController.php`)**: Giao diện thống kê doanh thu, đơn hàng, khách hàng.
+- **Phân quyền và Bảo mật (Middleware)**: Ngăn chặn truy cập trái phép vào trang Admin, yêu cầu đăng nhập.
 
-### 4. Cơ sở dữ liệu và Cấu hình
+### 4. Chức năng Xác thực & Đơn hàng (Cập nhật Mới)
+- **Xác thực Người Dùng (`AuthController.php`, `UserModel.php`)**: Đăng nhập, đăng xuất, phân quyền người dùng (Role-based access control). Form đăng nhập dạng Modal hiện đại.
+- **Giỏ Hàng (`CartController.php`)**: Thêm, sửa, xoá sản phẩm trong giỏ hàng lưu trữ bằng Session.
+- **Thanh Toán (Checkout)**: Lưu trữ đơn hàng (`OrderModel`) sử dụng Transaction PDO để đảm bảo tính toàn vẹn dữ liệu. Cập nhật trực tiếp số lượng tồn kho.
+
+### 5. Cơ sở dữ liệu và Cấu hình
 - Sử dụng **PDO (PHP Data Objects)** bảo mật chống lại SQL Injection.
 - Có sẵn file export cơ sở dữ liệu `database.sql` để dễ dàng tạo bảng/dữ liệu mẫu khi cài đặt.
 - Cấu hình file `config/Database.php` giúp kết nối CSDL linh hoạt và tiện dụng.
+- File `seed.php` giúp tự động khởi tạo dữ liệu mẫu (Sản phẩm & Tài khoản Admin) dễ dàng.
+
+## 🌟 Cập nhật ngày 04/10/2026
+Hôm nay dự án đã hoàn thành thêm các hạng mục vô cùng quan trọng:
+1. **Thiết kế UI/UX mới hoàn toàn**: Đồng bộ hóa toàn bộ giao diện theo chuẩn phong cách "hquie" hiện đại bằng **TailwindCSS** (Màu Teal/Cyan chủ đạo, Modal Login, Grid System 100% responsive).
+2. **Hoàn thiện luồng Đăng nhập/Đăng xuất**: Tạo `UserModel` và tích hợp RBAC (Role-based Access Control).
+3. **Admin Dashboard**: Cấu trúc thành phần layout Header/Footer, áp dụng thuật toán chặn người ngoài truy cập trái phép.
+4. **Hệ thống Giỏ Hàng & Checkout**: Hoàn thiện toàn bộ logic mua hàng sử dụng Session, lưu dữ liệu Đơn hàng/Chi tiết đơn hàng bằng Database Transactions.
+5. Tạo file **`seed.php`** hỗ trợ Gen dữ liệu một click tránh lỗi Foreign Key Constraint.
 
 ## 🛠 Hướng dẫn cài đặt
 
