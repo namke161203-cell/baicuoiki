@@ -13,17 +13,22 @@
 
     <h1 class="text-4xl font-black text-gray-900 tracking-tight mb-4 text-center">Cảm ơn bạn đã mua sắm!</h1>
 
-    <p class="text-lg text-gray-600 mb-8 text-center max-w-md">
-        Đơn hàng của bạn đã được tiếp nhận. Mã đơn hàng là <span class="font-bold text-indigo-600">#<?= str_pad($orderId ?? '0', 6, '0', STR_PAD_LEFT) ?></span>.
+    <p class="text-lg text-gray-600 mb-6 text-center max-w-md">
+        Đơn hàng của bạn đã được tiếp nhận. Mã đơn hàng là <span class="font-bold text-primary">#<?= str_pad($orderId ?? '0', 6, '0', STR_PAD_LEFT) ?></span>.
         Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận.
     </p>
 
+    <?php if (isset($customerInfo)): ?>
+    <div class="bg-gray-50 border border-gray-200 p-6 max-w-md w-full mb-8 text-center text-sm">
+        <h3 class="font-bold text-gray-900 mb-2 uppercase tracking-wider">Địa chỉ giao hàng</h3>
+        <p class="text-gray-700 font-medium"><?= htmlspecialchars($customerInfo['name']) ?> - <?= htmlspecialchars($customerInfo['phone']) ?></p>
+        <p class="text-gray-600 mt-1"><?= htmlspecialchars($customerInfo['address']) ?></p>
+    </div>
+    <?php endif; ?>
+
     <div class="flex space-x-4">
-        <a href="index.php" class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-indigo-700 transition transform hover:-translate-y-1">
+        <a href="index.php" class="bg-primary text-white font-bold py-3 px-8 uppercase tracking-wider hover:bg-primary-dark transition shadow-md">
             Tiếp tục mua sắm
-        </a>
-        <a href="#" class="bg-white text-indigo-600 border border-indigo-200 font-bold py-3 px-8 rounded-xl hover:bg-indigo-50 transition">
-            Theo dõi đơn
         </a>
     </div>
 

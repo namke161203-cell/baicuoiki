@@ -12,10 +12,11 @@ class OrderModel extends BaseModel {
             $this->db->beginTransaction();
 
             // 1. Thêm thông tin vào bảng orders
-            $sqlOrder = "INSERT INTO orders (customer_name, customer_email, customer_phone, shipping_address, total_amount, payment_method) 
-                         VALUES (:name, :email, :phone, :address, :total, :method)";
+            $sqlOrder = "INSERT INTO orders (user_id, customer_name, customer_email, customer_phone, shipping_address, total_amount, payment_method) 
+                         VALUES (:user_id, :name, :email, :phone, :address, :total, :method)";
             $stmtOrder = $this->db->prepare($sqlOrder);
             $stmtOrder->execute([
+                ':user_id' => $customerInfo['user_id'] ?? null,
                 ':name' => $customerInfo['name'],
                 ':email' => $customerInfo['email'],
                 ':phone' => $customerInfo['phone'],
@@ -67,5 +68,28 @@ class OrderModel extends BaseModel {
             $this->db->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * Lấy danh sách đơn hàng theo ID User
+     */
+    public function getOrdersByUserId($userId) {
+        $stmt = $this->db->prepare("SELECT * FROM orders WHERE user_id = :uid ORDER BY created_at DESC");
+        $stmt->execute([':uid' => $userId]);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Lấy chi tiết từng đơn
+        foreach ($orders as &$order) {
+            $stmtItems = $this->db->prepare("
+                SELECT oi.*, p.name as product_name, pv.size, pv.color 
+                FROM order_items oi
+                LEFT JOIN products p ON oi.product_id = p.id
+                LEFT JOIN product_variants pv ON oi.variant_id = pv.id
+                WHERE oi.order_id = :oid
+            ");
+            $stmtItems->execute([':oid' => $order['id']]);
+            $order['items'] = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $orders;
     }
 }

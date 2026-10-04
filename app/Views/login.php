@@ -37,8 +37,8 @@
 
         <!-- Tabs -->
         <div class="flex border-b border-gray-200 mb-6">
-            <button class="flex-1 py-3 text-center text-xs font-bold text-primary border-b-2 border-primary uppercase tracking-wider">Đăng nhập</button>
-            <button class="flex-1 py-3 text-center text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider transition">Tạo tài khoản</button>
+            <a href="index.php?controller=Auth&action=login" class="flex-1 py-3 text-center text-xs font-bold <?= !($is_register ?? false) ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600' ?> uppercase tracking-wider transition">Đăng nhập</a>
+            <a href="index.php?controller=Auth&action=register" class="flex-1 py-3 text-center text-xs font-bold <?= ($is_register ?? false) ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600' ?> uppercase tracking-wider transition">Tạo tài khoản</a>
         </div>
 
         <?php if (!empty($error)): ?>
@@ -47,7 +47,14 @@
             </div>
         <?php endif; ?>
 
-        <form action="index.php?controller=Auth&action=login" method="POST">
+        <form action="<?= ($is_register ?? false) ? 'index.php?controller=Auth&action=register' : 'index.php?controller=Auth&action=login' ?>" method="POST">
+            <?php if ($is_register ?? false): ?>
+            <div class="mb-4">
+                <label class="block text-xs font-bold text-gray-900 mb-2">Họ và Tên</label>
+                <input type="text" name="name" required class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-primary transition" placeholder="Nguyễn Văn A">
+            </div>
+            <?php endif; ?>
+
             <div class="mb-4">
                 <label class="block text-xs font-bold text-gray-900 mb-2">Email</label>
                 <input type="email" name="email" required class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-primary transition" placeholder="Email email@gmail.com">
@@ -62,12 +69,16 @@
                 </div>
             </div>
             
-            <div class="text-right mb-6">
+            <?php if (!($is_register ?? false)): ?>
+            <div class="text-right mb-6 mt-2">
                 <a href="#" class="text-xs font-medium text-primary hover:underline">Quên mật khẩu?</a>
             </div>
+            <?php else: ?>
+            <div class="mb-6 mt-2"></div>
+            <?php endif; ?>
 
             <button type="submit" class="w-full bg-primary text-white font-bold py-3 uppercase text-sm tracking-widest hover:bg-primary-dark transition mb-6 shadow-md">
-                Đăng nhập
+                <?= ($is_register ?? false) ? 'ĐĂNG KÝ' : 'ĐĂNG NHẬP' ?>
             </button>
             
             <div class="relative flex items-center justify-center mb-6">

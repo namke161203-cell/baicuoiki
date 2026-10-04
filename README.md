@@ -35,10 +35,20 @@ Dự án đã triển khai và hoàn thiện các chức năng và cấu trúc s
 ## 🌟 Cập nhật ngày 04/10/2026
 Hôm nay dự án đã hoàn thành thêm các hạng mục vô cùng quan trọng:
 1. **Thiết kế UI/UX mới hoàn toàn**: Đồng bộ hóa toàn bộ giao diện theo chuẩn phong cách "hquie" hiện đại bằng **TailwindCSS** (Màu Teal/Cyan chủ đạo, Modal Login, Grid System 100% responsive).
-2. **Hoàn thiện luồng Đăng nhập/Đăng xuất**: Tạo `UserModel` và tích hợp RBAC (Role-based Access Control).
+2. **Xác thực Người dùng Nâng cao**: 
+   - Hoàn thiện luồng Đăng nhập/Đăng ký.
+   - Khi Đăng ký thành công, tự động Đăng nhập vào hệ thống.
 3. **Admin Dashboard**: Cấu trúc thành phần layout Header/Footer, áp dụng thuật toán chặn người ngoài truy cập trái phép.
-4. **Hệ thống Giỏ Hàng & Checkout**: Hoàn thiện toàn bộ logic mua hàng sử dụng Session, lưu dữ liệu Đơn hàng/Chi tiết đơn hàng bằng Database Transactions.
-5. Tạo file **`seed.php`** hỗ trợ Gen dữ liệu một click tránh lỗi Foreign Key Constraint.
+4. **Hệ thống Giỏ Hàng & Checkout chuyên nghiệp**: 
+   - Tính năng **Mua Ngay** (bỏ qua giỏ hàng hiện tại, tạo session thanh toán riêng).
+   - Trang **Thanh Toán (Checkout)** 2 cột tách biệt, bao gồm form thu thập địa chỉ chi tiết và Select box 63 Tỉnh/Thành Việt Nam.
+   - Thao tác thay đổi số lượng, chọn Size trực tiếp trong Giỏ hàng (không cần nút Cập nhật).
+   - Truyền dữ liệu chi tiết giao hàng qua trang Thành công (Checkout Success).
+5. **Hồ sơ Người dùng (Profile)**:
+   - Giao diện Tài khoản cá nhân hiển thị Thông tin người dùng.
+   - Lịch sử đặt hàng chi tiết (liên kết với dữ liệu Order và Order_Items thực).
+   - Form cập nhật Số điện thoại và Địa chỉ mặc định trực tiếp.
+6. **Bảo mật và Dữ liệu**: Tạo file **`seed.php`** hỗ trợ Gen dữ liệu một click tránh lỗi Foreign Key Constraint. Sử dụng PDO an toàn.
 
 ## 🛠 Hướng dẫn cài đặt
 

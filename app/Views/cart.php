@@ -34,14 +34,13 @@ require_once __DIR__ . '/partials/header.php';
                             
                             <!-- Chọn Size (Theo design hiển thị S M L) -->
                             <div class="flex space-x-2 mb-4">
-                                <span class="border w-8 h-8 flex items-center justify-center text-xs <?= $item['size']=='S'?'border-primary text-primary font-bold':'border-gray-300 text-gray-500' ?>">S</span>
-                                <span class="border w-8 h-8 flex items-center justify-center text-xs <?= $item['size']=='M'?'border-primary text-primary font-bold':'border-gray-300 text-gray-500' ?>">M</span>
-                                <span class="border w-8 h-8 flex items-center justify-center text-xs <?= $item['size']=='L'?'border-primary text-primary font-bold':'border-gray-300 text-gray-500' ?>">L</span>
+                                <a href="index.php?controller=Cart&action=update&key=<?= $key ?>&size=S" class="border w-8 h-8 flex items-center justify-center text-xs <?= $item['size']=='S'?'border-primary text-primary font-bold':'border-gray-300 text-gray-500 hover:border-primary' ?>">S</a>
+                                <a href="index.php?controller=Cart&action=update&key=<?= $key ?>&size=M" class="border w-8 h-8 flex items-center justify-center text-xs <?= $item['size']=='M'?'border-primary text-primary font-bold':'border-gray-300 text-gray-500 hover:border-primary' ?>">M</a>
+                                <a href="index.php?controller=Cart&action=update&key=<?= $key ?>&size=L" class="border w-8 h-8 flex items-center justify-center text-xs <?= $item['size']=='L'?'border-primary text-primary font-bold':'border-gray-300 text-gray-500 hover:border-primary' ?>">L</a>
                             </div>
                             
                             <!-- Nút thao tác -->
                             <div class="flex items-center space-x-4">
-                                <button class="bg-primary text-white text-xs font-bold px-4 py-2 uppercase hover:bg-primary-dark transition">Cập nhật</button>
                                 <a href="index.php?controller=Cart&action=remove&key=<?= $key ?>" class="text-xs text-primary font-bold uppercase hover:underline">Xóa</a>
                             </div>
                         </div>
@@ -49,9 +48,9 @@ require_once __DIR__ . '/partials/header.php';
                         <!-- Số lượng & Tổng giá -->
                         <div class="text-right flex space-x-6 items-start">
                             <div class="flex items-center border border-gray-300 h-8">
-                                <button class="w-8 flex items-center justify-center text-gray-600 hover:bg-gray-100">-</button>
-                                <input type="text" value="<?= $item['quantity'] ?>" class="w-8 text-center text-xs font-bold focus:outline-none" readonly>
-                                <button class="w-8 flex items-center justify-center text-gray-600 hover:bg-gray-100">+</button>
+                                <a href="index.php?controller=Cart&action=update&key=<?= $key ?>&qty=<?= $item['quantity'] - 1 ?>" class="w-8 h-full flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">-</a>
+                                <input type="text" value="<?= $item['quantity'] ?>" class="w-8 text-center text-xs font-bold focus:outline-none bg-transparent" readonly>
+                                <a href="index.php?controller=Cart&action=update&key=<?= $key ?>&qty=<?= $item['quantity'] + 1 ?>" class="w-8 h-full flex items-center justify-center text-gray-600 hover:bg-gray-100 transition">+</a>
                             </div>
                             <p class="text-sm font-bold text-gray-900 w-24"><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>đ</p>
                         </div>
@@ -75,17 +74,11 @@ require_once __DIR__ . '/partials/header.php';
                     <span class="font-bold text-gray-900"><?= number_format($total + 25000, 0, ',', '.') ?> đ</span>
                 </div>
                 
-                <!-- Bổ sung form Checkout nhanh ngay dưới giỏ hàng để dễ test -->
-                <form action="index.php?controller=Cart&action=checkout" method="POST" class="mt-6 border-t border-gray-200 pt-6">
-                    <h3 class="font-bold text-gray-900 mb-4 uppercase">Thông tin nhận hàng nhanh</h3>
-                    <input type="text" name="fullname" placeholder="Họ và tên" required class="w-full border border-gray-300 p-2 text-sm mb-3 focus:border-primary focus:outline-none">
-                    <input type="text" name="phone" placeholder="Số điện thoại" required class="w-full border border-gray-300 p-2 text-sm mb-3 focus:border-primary focus:outline-none">
-                    <input type="text" name="address" placeholder="Địa chỉ giao hàng" required class="w-full border border-gray-300 p-2 text-sm mb-4 focus:border-primary focus:outline-none">
-                    
-                    <button type="submit" class="w-full bg-primary text-white font-bold py-3 uppercase tracking-wider hover:bg-primary-dark transition">
-                        Thanh toán ngay
-                    </button>
-                </form>
+                <div class="mt-6 border-t border-gray-200 pt-6">
+                    <a href="index.php?controller=Cart&action=checkout" class="block text-center w-full bg-primary text-white font-bold py-3 uppercase tracking-wider hover:bg-primary-dark transition text-sm">
+                        Tiến hành thanh toán
+                    </a>
+                </div>
             </div>
             <?php endif; ?>
         </div>

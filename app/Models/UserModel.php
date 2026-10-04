@@ -21,4 +21,44 @@ class UserModel extends BaseModel {
         
         return false;
     }
+
+    /**
+     * Hàm đăng ký người dùng mới
+     */
+    public function register($name, $email, $password) {
+        // Kiểm tra email tồn tại
+        $stmt = $this->db->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
+        $stmt->execute([':email' => $email]);
+        if ($stmt->fetch()) {
+            return false; // Đã tồn tại
+        }
+
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $this->db->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+        return $stmt->execute([
+            ':name' => $name,
+            ':email' => $email,
+            ':password' => $hashedPassword
+        ]);
+    }
+
+    /**
+     * Lấy thông tin User bằng ID
+     */
+    public function getUserById($id) {
+        $stmt = $this->db->prepare("SELECT name, email, phone, address FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    /**
+     * Cập nhật thông tin Profile (Điện thoại, Địa chỉ)
+     */
+    public function updateProfile($id, $phone, $address) {
+        $stmt = $this->db->prepare("UPDATE users SET phone = :phone, address = :address WHERE id = :id");
+        return $stmt->execute([
+            ':phone' => $phone,
+            ':address' => $address,
+            ':id' => $id
+        ]);
+    }
 }

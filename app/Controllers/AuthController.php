@@ -38,7 +38,42 @@ class AuthController extends BaseController {
             }
         }
 
-        $this->render('login', ['title' => 'Đăng nhập', 'error' => $error]);
+        $this->render('login', ['title' => 'Đăng nhập', 'error' => $error, 'is_register' => false]);
+    }
+
+    // GET/POST: Giao diện và Xử lý Đăng ký
+    public function register() {
+        if (isset($_SESSION['user_id'])) {
+            header("Location: " . ($_SESSION['user_role'] === 'admin' ? "index.php?controller=Admin&action=index" : "index.php"));
+            exit;
+        }
+
+        $error = '';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = trim($_POST['name'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            
+            if (empty($name) || empty($email) || empty($password)) {
+                $error = 'Vui lòng điền đầy đủ thông tin';
+            } else {
+                $userModel = new UserModel();
+                if ($userModel->register($name, $email, $password)) {
+                    // Tự động đăng nhập luôn
+                    $user = $userModel->login($email, $password);
+                    if ($user) {
+                        $_SESSION['user_id'] = $user['id'];
+                        $_SESSION['user_name'] = $user['name'];
+                        $_SESSION['user_role'] = $user['role'];
+                        header("Location: index.php");
+                        exit;
+                    }
+                } else {
+                    $error = 'Email đã được sử dụng.';
+                }
+            }
+        }
+        $this->render('login', ['title' => 'Tạo tài khoản', 'error' => $error, 'is_register' => true]);
     }
 
     // Đăng xuất

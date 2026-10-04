@@ -71,7 +71,7 @@ require_once __DIR__ . '/partials/header.php';
                     <button type="submit" class="w-full bg-primary text-white font-bold py-4 mb-3 uppercase tracking-wider hover:bg-primary-dark transition text-sm">
                         Thêm vào giỏ
                     </button>
-                    <button type="button" class="w-full bg-[#1c5666] text-white font-bold py-4 uppercase tracking-wider hover:bg-gray-900 transition text-sm">
+                    <button type="submit" name="buy_now" value="1" class="w-full bg-[#1c5666] text-white font-bold py-4 uppercase tracking-wider hover:bg-gray-900 transition text-sm">
                         Mua ngay
                     </button>
                 </form>
