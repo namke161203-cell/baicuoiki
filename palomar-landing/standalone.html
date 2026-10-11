@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palomar - One Unified System for LLMs</title>
+
+  <!-- Fonts -->
+  <link href="https://db.onlinewebfonts.com/c/0e6de1ec911a2e267ff136bbdd384a44?family=Helvetica+Neue+Light"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Oswald:wght@500&family=Montserrat:wght@700&family=Roboto+Slab:wght@600&family=Raleway:wght@700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#2d3a2e',
+              green: '#3d5a3e',
+              light: '#f5f3ef',
+              cream: '#faf8f5',
+            }
+          },
+          fontFamily: {
+            'helvetica-neue': ['"Helvetica Neue Light"', 'Helvetica', 'Arial', 'sans-serif'],
+            'playfair': ['"Playfair Display"', 'serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+            'montserrat': ['Montserrat', 'sans-serif'],
+            'roboto-slab': ['"Roboto Slab"', 'serif'],
+            'raleway': ['Raleway', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fade-down {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-up {
+      animation: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .animate-fade-down {
+      animation: fade-down 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .stagger-1 {
+      animation-delay: 0ms;
+    }
+
+    .stagger-2 {
+      animation-delay: 120ms;
+    }
+
+    .stagger-3 {
+      animation-delay: 240ms;
+    }
+
+    .stagger-4 {
+      animation-delay: 360ms;
+    }
+
+    .stagger-5 {
+      animation-delay: 480ms;
+    }
+
+    .stagger-6 {
+      animation-delay: 600ms;
+    }
+  </style>
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body class="font-helvetica-neue bg-brand-cream antialiased overflow-x-hidden">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Icons
+    const ChevronDown = ({ className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    );
+    const ArrowRight = ({ className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    );
+    const Triangle = ({ className }) => (
+      <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+    );
+
+    function App() {
+      const [isScrolled, setIsScrolled] = useState(false);
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => {
+          setIsScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      useEffect(() => {
+        if (isMenuOpen) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+        return () => {
+          document.body.style.overflow = '';
+        };
+      }, [isMenuOpen]);
+
+      const closeMenu = () => setIsMenuOpen(false);
+
+      return (
+        <React.Fragment>
+          <nav
+            className={`fixed top-0 left-0 right-0 z-50 transition duration-300 ${isScrolled ? 'bg-brand-cream/90 backdrop-blur-md shadow-sm' : 'bg-transparent'
+              }`}
+          >
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+              <div className="relative flex items-center h-16 md:h-20">
+                {/* Desktop Left Links */}
+                <div className="hidden md:flex items-center gap-8 animate-fade-down stagger-1">
+                  <button className="text-sm text-brand-dark tracking-wide uppercase hover:opacity-70 transition-opacity flex items-center gap-1">
+                    Solutions <ChevronDown className="w-3.5 h-3.5" />
+                  </button>
+                  <a href="#" className="text-sm text-brand-dark tracking-wide uppercase hover:opacity-70 transition-opacity">
+                    Plans
+                  </a>
+                  <a href="#" className="text-sm text-brand-dark tracking-wide uppercase hover:opacity-70 transition-opacity">
+                    News
+                  </a>
+                </div>
+
+                {/* Center Logo */}
+                <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 animate-fade-down stagger-2">
+                  <Triangle className="w-5 h-5 text-brand-dark fill-brand-dark" />
+                  <span className="text-xl text-brand-dark tracking-tight font-helvetica-neue">Palomar</span>
+                </div>
+
+                {/* Desktop CTA */}
+                <a
+                  href="#"
+                  className="hidden md:inline-flex items-center ml-auto px-5 py-2.5 bg-brand-dark text-white text-sm tracking-wide uppercase rounded-full hover:bg-brand-green transition-colors animate-fade-down stagger-3"
+                >
+                  Try It Free
+                </a>
+
+                {/* Mobile Hamburger */}
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="md:hidden ml-auto z-50 w-10 h-10 relative flex items-center justify-center focus:outline-none"
+                  aria-label="Toggle menu"
+                >
+                  <div
+                    className={`absolute w-6 h-[2px] bg-brand-dark rounded transition-all duration-300 ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] ${isMenuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-[16px]'
+                      }`}
+                  />
+                  <div
+                    className={`absolute w-6 h-[2px] bg-brand-dark rounded transition-all duration-300 ease-[cubic-bezier(0.68,-0.6,0.32,1.6)] ${isMenuOpen ? 'top-1/2 -translate-y-1/2 -rotate-45' : 'top-[23px]'
+                      }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </nav>
+
+          {/* Mobile Overlay */}
+          <div
+            className={`md:hidden fixed inset-0 bg-brand-cream z-40 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+              }`}
+          >
+            <div
+              className={`flex flex-col items-center justify-center h-full gap-8 transition duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 ${isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'
+                }`}
+            >
+              <a href="#" onClick={closeMenu} className="text-3xl text-brand-dark tracking-tight">
+                Solutions
+              </a>
+              <a href="#" onClick={closeMenu} className="text-3xl text-brand-dark tracking-tight">
+                Plans
+              </a>
+              <a href="#" onClick={closeMenu} className="text-3xl text-brand-dark tracking-tight">
+                News
+              </a>
+              <a
+                href="#"
+                onClick={closeMenu}
+                className="mt-4 inline-flex items-center px-8 py-3.5 bg-brand-dark text-white text-lg tracking-wide rounded-full"
+              >
+                Try It Free
+              </a>
+            </div>
+          </div>
+
+          {/* Hero Section */}
+          <section className="relative w-full h-screen min-h-[700px] overflow-hidden bg-brand-cream">
+            <div className="absolute inset-0">
+              <video
+                src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260820_010308_b1636845-4c15-4ab6-b0c9-9a29bfb0c6e3.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover object-bottom"
+              />
+            </div>
+            <div className="relative z-10 flex flex-col items-start max-w-7xl mx-auto pt-28 md:pt-36 px-6 lg:px-8">
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-dark/15 bg-white/60 backdrop-blur-sm hover:bg-white/80 transition-colors mb-5 md:mb-6 animate-fade-up stagger-3"
+              >
+                <span className="text-sm text-brand-dark">Live for everyone today! Offering $1MM in credits.</span>
+                <ArrowRight className="w-3.5 h-3.5 text-brand-dark" />
+              </a>
+              <h1 className="text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-brand-dark leading-[1.05] tracking-tight max-w-4xl font-helvetica-neue animate-fade-up stagger-4">
+                One unified system to build,<br className="hidden sm:block" /> test, ship, and observe LLMs
+              </h1>
+
+              {/* Trusted By */}
+              <div className="w-full mt-8 md:mt-10 animate-fade-up stagger-5">
+                <p className="text-left text-xs tracking-[0.25em] uppercase text-brand-dark/50 mb-6 md:mb-8 font-helvetica-neue">
+                  Backed by
+                </p>
+                <div className="flex flex-wrap items-center justify-start gap-6 md:gap-12 lg:gap-16 animate-fade-up stagger-6">
+                  <span className="text-lg md:text-xl lg:text-2xl text-brand-dark/80 whitespace-nowrap font-playfair">Meridian</span>
+                  <span className="text-lg md:text-xl lg:text-2xl text-brand-dark/80 whitespace-nowrap font-oswald uppercase">STELLEX</span>
+                  <span className="text-lg md:text-xl lg:text-2xl text-brand-dark/80 whitespace-nowrap font-montserrat">Luminar</span>
+                  <span className="text-lg md:text-xl lg:text-2xl text-brand-dark/80 whitespace-nowrap font-roboto-slab uppercase">OVERLAND</span>
+                  <span className="text-lg md:text-xl lg:text-2xl text-brand-dark/80 whitespace-nowrap font-raleway">Kinetic</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </React.Fragment>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+
+</html>

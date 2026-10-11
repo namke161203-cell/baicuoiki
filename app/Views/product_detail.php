@@ -35,6 +35,15 @@ require_once __DIR__ . '/partials/header.php';
 
             <!-- Thông tin -->
             <div>
+                <?php if (isset($_SESSION['cart_success'])): ?>
+                    <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded flex items-center shadow-sm">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        <span class="text-sm font-semibold"><?= htmlspecialchars($_SESSION['cart_success']) ?></span>
+                        <a href="index.php?controller=Cart&action=index" class="ml-auto text-sm underline font-bold hover:text-green-900">Xem giỏ hàng</a>
+                    </div>
+                    <?php unset($_SESSION['cart_success']); ?>
+                <?php endif; ?>
+
                 <h1 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-2"><?= $product['name'] ?></h1>
                 <p class="text-lg font-bold text-gray-900 mb-6">- <?= number_format($product['price'], 0, ',', '.') ?>đ</p>
                 
@@ -49,15 +58,19 @@ require_once __DIR__ . '/partials/header.php';
                             <h3 class="text-sm font-bold text-gray-900 uppercase">Chọn cỡ</h3>
                             <a href="#" class="text-xs text-primary underline font-medium uppercase">Bảng size</a>
                         </div>
-                        <select name="size" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary uppercase bg-white">
-                            <option value="">Chọn Cỡ</option>
+                        <div class="flex flex-wrap gap-3">
                             <?php 
                             $sizes = array_unique(array_column($product['variants'], 'size'));
-                            foreach ($sizes as $size): 
+                            foreach ($sizes as $index => $size): 
                             ?>
-                            <option value="<?= $size ?>"><?= $size ?></option>
+                            <div>
+                                <input type="radio" id="size-<?= $index ?>" name="size" value="<?= $size ?>" class="peer hidden" required>
+                                <label for="size-<?= $index ?>" class="block cursor-pointer px-6 py-2 border border-gray-300 text-sm font-bold text-gray-700 hover:border-gray-900 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white transition uppercase text-center min-w-[3rem]">
+                                    <?= $size ?>
+                                </label>
+                            </div>
                             <?php endforeach; ?>
-                        </select>
+                        </div>
                     </div>
 
                     <!-- Lựa chọn Màu sắc ngầm định (Vì Design không vẽ chọn màu rõ ràng, giả lập input hidden cho đủ dữ liệu giỏ hàng) -->

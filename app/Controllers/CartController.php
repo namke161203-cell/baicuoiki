@@ -51,7 +51,10 @@ class CartController extends BaseController {
                 $_SESSION['cart'][$cartKey] = $itemData;
             }
 
-            header("Location: index.php?controller=Cart&action=index");
+            $_SESSION['cart_success'] = 'Đã thêm ' . $productName . ' vào giỏ hàng!';
+            
+            $redirectUrl = $_SERVER['HTTP_REFERER'] ?? 'index.php?controller=Product&action=index';
+            header("Location: " . $redirectUrl);
             exit;
         }
     }

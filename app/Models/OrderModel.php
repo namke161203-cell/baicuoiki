@@ -92,4 +92,38 @@ class OrderModel extends BaseModel {
         }
         return $orders;
     }
+
+    /**
+     * Lấy TẤT CẢ đơn hàng cho Admin
+     */
+    public function getAllOrders() {
+        $stmt = $this->db->prepare("SELECT * FROM orders ORDER BY created_at DESC");
+        $stmt->execute();
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Lấy chi tiết từng đơn
+        foreach ($orders as &$order) {
+            $stmtItems = $this->db->prepare("
+                SELECT oi.*, p.name as product_name, pv.size, pv.color 
+                FROM order_items oi
+                LEFT JOIN products p ON oi.product_id = p.id
+                LEFT JOIN product_variants pv ON oi.variant_id = pv.id
+                WHERE oi.order_id = :oid
+            ");
+            $stmtItems->execute([':oid' => $order['id']]);
+            $order['items'] = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return $orders;
+    }
+
+    /**
+     * Cập nhật trạng thái đơn hàng
+     */
+    public function updateOrderStatus($orderId, $status) {
+        $stmt = $this->db->prepare("UPDATE orders SET status = :status WHERE id = :id");
+        return $stmt->execute([
+            ':status' => $status,
+            ':id' => $orderId
+        ]);
+    }
 }

@@ -56,6 +56,8 @@ class AuthController extends BaseController {
             
             if (empty($name) || empty($email) || empty($password)) {
                 $error = 'Vui lòng điền đầy đủ thông tin';
+            } elseif (!str_contains($password, '@')) {
+                $error = 'Mật khẩu không hợp lệ: Bắt buộc phải chứa ký tự "@"!';
             } else {
                 $userModel = new UserModel();
                 if ($userModel->register($name, $email, $password)) {

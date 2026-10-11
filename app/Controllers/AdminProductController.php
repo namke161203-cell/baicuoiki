@@ -10,11 +10,24 @@ class AdminProductController extends BaseController {
         $this->productModel = new ProductModel();
     }
 
+    // GET: Danh sách sản phẩm
+    public function index() {
+        $products = $this->productModel->getAllProducts();
+        $this->render('admin/products', [
+            'title' => 'Quản lý Sản Phẩm',
+            'products' => $products
+        ]);
+    }
+
     // GET: Hiển thị form thêm sản phẩm
     public function create() {
-        // Trong thực tế, bạn sẽ lấy danh sách category truyền vào view ở đây
-        // $this->render('admin/product_create', ['categories' => $categories]);
-        echo "Đây là giao diện Form thêm sản phẩm (sẽ code phần View sau).";
+        // Lấy danh sách category thực tế từ CSDL
+        $categories = $this->productModel->getAllCategories();
+        
+        $this->render('admin/product_create', [
+            'title' => 'Thêm Sản Phẩm Mới',
+            'categories' => $categories
+        ]);
     }
 
     // POST: Xử lý submit form
@@ -74,13 +87,23 @@ class AdminProductController extends BaseController {
             // 4. Lưu vào Database
             try {
                 $productId = $this->productModel->createProduct($data, $variants, $images);
-                echo "Tuyệt vời! Đã thêm sản phẩm thành công với ID: " . $productId;
-                // Thực tế: header("Location: index.php?controller=AdminProduct&action=index");
+                header("Location: index.php?controller=AdminProduct&action=index");
+                exit;
             } catch (Exception $e) {
-                echo "Đã xảy ra lỗi hệ thống: " . $e->getMessage();
+                die("Đã xảy ra lỗi hệ thống: " . $e->getMessage());
             }
         } else {
             die("Phương thức không hợp lệ!");
         }
+    }
+
+    // GET: Xóa sản phẩm
+    public function delete() {
+        $id = $_GET['id'] ?? null;
+        if ($id) {
+            $this->productModel->deleteProduct($id);
+        }
+        header("Location: index.php?controller=AdminProduct&action=index");
+        exit;
     }
 }

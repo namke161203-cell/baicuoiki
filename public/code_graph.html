@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphify - Sơ Đồ Kiến Trúc Mã Nguồn (Code Dependency Graph)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        code,
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+    <!-- Top Bar -->
+    <header
+        class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <span
+                class="px-2.5 py-1 rounded bg-teal-500/20 text-teal-400 font-mono text-xs font-bold border border-teal-500/30">AI
+                SKILL: GRAPHIFY</span>
+            <h1 class="text-lg font-bold text-white tracking-wide">Bản Đồ Kiến Trúc & Phụ Thuộc Code (PHP MVC)</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <a href="../index.php"
+                class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded transition">← Về Trang
+                Chủ Website</a>
+            <span class="text-xs text-slate-400">Dự án: <b class="text-white">clothing_store</b></span>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <!-- Introduction Banner -->
+        <div
+            class="bg-gradient-to-r from-teal-950/60 via-slate-900 to-indigo-950/60 border border-teal-500/20 rounded-xl p-6 shadow-xl">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-teal-300 mb-2">🎯 Mục đích sử dụng Skill Graphify</h2>
+                    <p class="text-sm text-slate-300 leading-relaxed max-w-3xl">
+                        Skill này phân tích tĩnh toàn bộ mã nguồn của dự án thành <b>Code Dependency Graph</b>.
+                        Nó giúp Lập trình viên và AI Agent định vị tức thì: <b>"Tính năng đó ở đâu?"</b>, <b>"Ai gọi
+                            ai?"</b>, và <b>"Khi sửa đổi 1 file thì những thành phần nào sẽ bị ảnh hưởng?"</b>.
+                    </p>
+                </div>
+                <div class="hidden sm:block text-right">
+                    <span class="text-xs font-mono text-slate-400 block">Kiến trúc chuẩn</span>
+                    <span class="text-sm font-bold text-teal-400">Pure PHP MVC + PDO</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Diagram -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full bg-teal-500 animate-pulse"></span>
+                    <span>Sơ đồ luồng xử lý tổng thể (Request & Dependency Graph)</span>
+                </h3>
+                <span class="text-xs font-mono text-slate-400">Rendered via Mermaid.js</span>
+            </div>
+
+            <div class="mermaid bg-slate-950/50 p-4 rounded-lg overflow-x-auto flex justify-center">
+                graph TD
+                Client([Trình duyệt Khách hàng / Admin]) -->|1. Gửi HTTP Request| Router[index.php - Front Controller]
+
+                subgraph Routing & Phân Phối
+                Router -->|2. Phân tích controller & action| Dispatcher{Dispatcher}
+                end
+
+                subgraph Controller Layer [app/Controllers/]
+                Dispatcher -->|controller=Auth| AuthC[AuthController.php<br />Đăng nhập & Đăng ký]
+                Dispatcher -->|controller=Home| HomeC[HomeController.php<br />Trang chủ & Banner Mùa Đông]
+                Dispatcher -->|controller=Product| ProdC[ProductController.php<br />Chi tiết Sản Phẩm & Biến thể]
+                Dispatcher -->|controller=Cart| CartC[CartController.php<br />Giỏ Hàng & Checkout]
+                Dispatcher -->|controller=Admin*| AdminC[Admin*Controllers.php<br />Quản trị Hệ Thống]
+                end
+
+                subgraph Model Layer [app/Models/]
+                AuthC -->|Gọi xác thực mật khẩu bcrypt| UserM[UserModel.php]
+                HomeC -->|Lấy sản phẩm mùa đông| ProdM[ProductModel.php]
+                ProdC -->|Lấy chi tiết & biến thể| ProdM
+                CartC -->|Kiểm tra tồn kho & Đặt hàng| OrderM[OrderModel.php]
+                AdminC -->|Thống kê & CRUD| AdminM[AdminModel.php]
+
+                UserM -->|Kế thừa| BaseM[BaseModel.php]
+                ProdM -->|Kế thừa| BaseM
+                OrderM -->|Kế thừa| BaseM
+                AdminM -->|Kế thừa| BaseM
+                end
+
+                subgraph Database Layer [MySQL Database]
+                BaseM -->|PDO Prepared Statements| DB[(clothing_store)]
+                end
+
+                subgraph View Layer [app/Views/]
+                AuthC -.->|Render| VLogin[login.php]
+                HomeC -.->|Render| VHome[home.php]
+                ProdC -.->|Render| VDetail[product_detail.php]
+                CartC -.->|Render| VCart[cart.php / checkout.php]
+                end
+
+                classDef highlight fill:#0f766e,stroke:#2dd4bf,stroke-width:2px,color:#fff;
+                class AuthC,UserM,VLogin highlight;
+            </div>
+
+            <p class="text-xs text-slate-400 text-center mt-4">
+                💡 <span class="text-teal-400 font-semibold">Các khối màu xanh ngọc</span> là luồng xử lý tính năng
+                <b>Đăng nhập / Đăng ký</b> (AuthController → UserModel → View login.php).
+            </p>
+        </div>
+
+        <!-- Question & Answer Direct Helper (Dành cho việc trả lời vấn đáp) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Box 1: Trả lời câu hỏi 2a -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <div class="flex items-center space-x-2 text-teal-400 font-bold mb-3">
+                    <span class="px-2 py-0.5 rounded bg-teal-500/20 text-xs">CÂU HỎI 2a</span>
+                    <h4>Định vị tính năng Đăng nhập & Ràng buộc có dấu @</h4>
+                </div>
+                <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <p><b>1. File xử lý logic:</b> <code
+                            class="text-teal-300 bg-slate-800 px-1.5 py-0.5 rounded">app/Controllers/AuthController.php</code>
+                        (Hàm <code class="text-amber-300">register()</code> và <code
+                            class="text-amber-300">login()</code>).</p>
+                    <p><b>2. File xử lý CSDL:</b> <code
+                            class="text-teal-300 bg-slate-800 px-1.5 py-0.5 rounded">app/Models/UserModel.php</code> (Mã
+                        hóa bcrypt bằng <code class="text-amber-300">password_hash()</code>).</p>
+                    <p><b>3. File giao diện:</b> <code
+                            class="text-teal-300 bg-slate-800 px-1.5 py-0.5 rounded">app/Views/login.php</code>.</p>
+                    <div class="p-3 bg-slate-950 rounded border border-slate-800 font-mono text-[11px] text-teal-200">
+                        // Thêm ràng buộc mật khẩu có dấu @ (Server)<br />
+                        if (!str_contains($password, '@')) {<br />
+                        &nbsp;&nbsp;&nbsp;&nbsp;$error = 'Mật khẩu phải chứa ký tự @';<br />
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 2: Trả lời câu hỏi 2c -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <div class="flex items-center space-x-2 text-indigo-400 font-bold mb-3">
+                    <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-xs">CÂU HỎI 2c</span>
+                    <h4>Vai trò Leader: Đánh giá qua Git Log & Diff</h4>
+                </div>
+                <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                    <p><b>1. Không đếm số dòng code (LOC):</b> Đếm dòng code là sai lầm vì dễ bị gian lận (copy thư
+                        viện, format bừa bãi).</p>
+                    <p><b>2. Đánh giá qua `git log`:</b> Kiểm tra <b>Atomic Commits</b> (mỗi commit giải quyết trọn vẹn
+                        1 tính năng/bug), thông điệp rõ ràng (<code class="text-amber-300">feat:</code>, <code
+                            class="text-amber-300">fix:</code>), tiến độ làm việc đều đặn.</p>
+                    <p><b>3. Đánh giá qua `git diff`:</b> Code có tập trung đúng phạm vi task không, có để lại rác debug
+                        (<code class="text-amber-300">var_dump</code>) không, tỉ lệ sửa lại bug (code churn) có thấp
+                        không.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        Graphify Visualizer &bull; Tích hợp hỗ trợ chấm điểm đồ án kết hợp AI Agents
+    </footer>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                darkMode: true,
+                background: '#020617',
+                primaryColor: '#0f766e',
+                primaryTextColor: '#f8fafc',
+                lineColor: '#475569'
+            }
+        });
+    </script>
+</body>
+
+</html>

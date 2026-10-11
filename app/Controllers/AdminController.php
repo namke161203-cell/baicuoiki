@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/BaseController.php';
+require_once __DIR__ . '/../Models/AdminModel.php';
 
 class AdminController extends BaseController {
     
@@ -13,17 +14,23 @@ class AdminController extends BaseController {
 
     // Trang chủ Dashboard của Admin
     public function index() {
-        // Mock data thống kê
+        $adminModel = new AdminModel();
+        
         $stats = [
-            'total_orders' => 124,
-            'revenue' => 45000000,
-            'total_products' => 32,
-            'new_customers' => 12
+            'today_revenue' => $adminModel->getTodayRevenue(),
+            'new_orders' => $adminModel->getNewOrdersCount(),
+            'new_customers' => $adminModel->getNewCustomersCount(),
+            'out_of_stock' => $adminModel->getOutOfStockCount()
         ];
+        
+        $latestOrders = $adminModel->getLatestOrders(4);
+        $bestSellers = $adminModel->getBestSellers(6);
         
         $this->render('admin/dashboard', [
             'title' => 'Tổng quan Hệ thống',
-            'stats' => $stats
+            'stats' => $stats,
+            'latestOrders' => $latestOrders,
+            'bestSellers' => $bestSellers
         ]);
     }
 }

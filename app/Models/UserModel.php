@@ -61,4 +61,13 @@ class UserModel extends BaseModel {
             ':id' => $id
         ]);
     }
+    
+    /**
+     * Lấy danh sách toàn bộ khách hàng cho Admin
+     */
+    public function getAllCustomers() {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE role = 'customer' ORDER BY created_at DESC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
