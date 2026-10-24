@@ -19,11 +19,13 @@ class CartController extends BaseController {
                 $_SESSION['cart'] = [];
             }
 
-            // NOTE: Thực tế ta cần query ProductModel để lấy Tên, Giá, Ảnh chuẩn. 
-            // Ở prototype này ta giả lập để nhanh chóng hoàn thiện flow.
-            $productPrice = 650000;
-            $productName = "Áo Khoác Bomber Lót Dù Cao Cấp"; 
-            $productImage = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=150&q=80";
+            require_once __DIR__ . '/../Models/ProductModel.php';
+            $pModel = new ProductModel();
+            $pInfo = $pModel->getProductById($productId);
+
+            $productPrice = $pInfo ? (float)$pInfo['price'] : 650000;
+            $productName = $pInfo ? $pInfo['name'] : "Áo Khoác Bomber Lót Dù Cao Cấp"; 
+            $productImage = ($pInfo && !empty($pInfo['images'])) ? $pInfo['images'][0] : "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=150&q=80";
 
             $itemData = [
                 'product_id' => $productId,

@@ -110,16 +110,38 @@ class ProductModel extends BaseModel {
     }
 
     /**
-     * Lấy sản phẩm nổi bật (is_featured = 1 hoặc mới nhất) cho trang chủ
+     * Lấy sản phẩm nổi bật (kèm tên danh mục, biến thể và hình ảnh) cho trang chủ
      */
-    public function getFeaturedProducts($limit = 8) {
-        $sql = "SELECT p.id, p.name, p.price, p.is_featured,
-                       (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+    public function getFeaturedProducts($limit = 12) {
+        $sql = "SELECT p.id, p.name, p.price, p.description, p.is_featured, p.category_id,
+                       c.name as category_name, c.slug as category_slug,
+                       (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image,
+                       (SELECT GROUP_CONCAT(DISTINCT color SEPARATOR ', ') FROM product_variants WHERE product_id = p.id) as colors,
+                       (SELECT GROUP_CONCAT(DISTINCT size SEPARATOR ', ') FROM product_variants WHERE product_id = p.id) as sizes,
+                       (SELECT SUM(stock) FROM product_variants WHERE product_id = p.id) as total_stock
                 FROM products p
+                LEFT JOIN categories c ON p.category_id = c.id
                 ORDER BY p.is_featured DESC, p.created_at DESC
                 LIMIT :limit";
         $stmt = $this->db->prepare($sql);
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Lấy danh mục kèm số lượng sản phẩm và ảnh bìa đại diện
+     */
+    public function getCategoriesWithCount() {
+        $sql = "SELECT c.*, COUNT(p.id) as product_count,
+                       (SELECT pi.image_url FROM products p2 
+                        JOIN product_images pi ON pi.product_id = p2.id 
+                        WHERE p2.category_id = c.id AND pi.is_primary = 1 LIMIT 1) as cover_image
+                FROM categories c
+                LEFT JOIN products p ON p.category_id = c.id
+                GROUP BY c.id
+                ORDER BY product_count DESC, c.name ASC";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -151,5 +173,45 @@ class ProductModel extends BaseModel {
         $product['variants'] = $stmtVar->fetchAll(PDO::FETCH_ASSOC);
 
         return $product;
+    }
+
+    /**
+     * Tìm kiếm sản phẩm theo từ khóa (tên hoặc mô tả)
+     */
+    public function searchProducts($keyword, $limit = 50) {
+        $sql = "SELECT p.id, p.name, p.price, p.description, p.is_featured,
+                       (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+                FROM products p
+                WHERE p.name LIKE :kw OR p.description LIKE :kw
+                ORDER BY p.id DESC
+                LIMIT :limit";
+        $stmt = $this->db->prepare($sql);
+        $searchParam = '%' . trim($keyword) . '%';
+        $stmt->bindParam(':kw', $searchParam, PDO::PARAM_STR);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Lấy sản phẩm theo danh mục hoặc từ khóa phân loại
+     */
+    public function getProductsByCategoryOrKeyword($term, $limit = 50) {
+        $sql = "SELECT p.id, p.name, p.price, p.description, p.is_featured,
+                       (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+                FROM products p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.name LIKE :term 
+                   OR p.description LIKE :term 
+                   OR c.name LIKE :term
+                   OR c.slug LIKE :term
+                ORDER BY p.id DESC
+                LIMIT :limit";
+        $stmt = $this->db->prepare($sql);
+        $param = '%' . trim($term) . '%';
+        $stmt->bindParam(':term', $param, PDO::PARAM_STR);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -10,12 +10,19 @@ class AdminProductController extends BaseController {
         $this->productModel = new ProductModel();
     }
 
-    // GET: Danh sách sản phẩm
+    // GET: Danh sách sản phẩm (có hỗ trợ tìm kiếm)
     public function index() {
-        $products = $this->productModel->getAllProducts();
+        $keyword = trim($_GET['keyword'] ?? '');
+        if (!empty($keyword)) {
+            $products = $this->productModel->searchProducts($keyword);
+        } else {
+            $products = $this->productModel->getAllProducts();
+        }
+
         $this->render('admin/products', [
             'title' => 'Quản lý Sản Phẩm',
-            'products' => $products
+            'products' => $products,
+            'keyword' => $keyword
         ]);
     }
 

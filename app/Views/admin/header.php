@@ -3,131 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Admin Dashboard' ?></title>
+    <title><?= $title ?? 'hquie Cadra Studio - Executive Dashboard' ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#34869c',
-                        'primary-dark': '#1a5666',
-                        bglight: '#eef5f6'
+                        primary: '#1c1d1f',
+                        'cadra-bg': '#f4f5f6',
+                        'cadra-dark': '#18191b',
+                        'cadra-blue': '#2563eb',
+                        'cadra-teal': '#0f766e',
+                        'cadra-orange': '#ea580c'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f4f5f6;
+            color: #1c1d1f;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Smooth Tab Animations (Ultra silky Cadra curve) */
+        @keyframes cadraTabEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(8px) scale(0.996);
+                filter: blur(1.5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+        .tab-pane.active-tab {
+            display: block !important;
+            animation: cadraTabEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .tab-pane.hidden-tab {
+            display: none !important;
+        }
+
+        /* Pill Tab Active State */
+        .cadra-nav-btn {
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+            white-space: nowrap;
+        }
+        .cadra-nav-btn:active {
+            transform: scale(0.94);
+        }
+        .cadra-nav-btn.active {
+            background-color: #18191b !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+        .cadra-nav-btn:not(.active):hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #18191b;
+        }
+
+        /* Hide scrollbar for clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Pulse Dot */
+        @keyframes livePulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .live-dot {
+            animation: livePulse 2s infinite ease-in-out;
+        }
+    </style>
 </head>
-<body class="bg-bglight flex h-screen overflow-hidden text-gray-800">
+<?php
+$reqController = $_GET['controller'] ?? 'Admin';
+$reqTab = $_GET['tab'] ?? '';
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-white flex flex-col shadow-[2px_0_15px_rgba(0,0,0,0.03)] z-20 flex-shrink-0">
-        <!-- Logo -->
-        <div class="h-16 flex items-center justify-center border-b border-gray-100">
-            <a href="index.php" class="text-3xl font-black tracking-tighter text-primary">hquie</a>
+$currentActivePill = 'dashboard';
+if ($reqController === 'Admin') {
+    $currentActivePill = !empty($reqTab) ? $reqTab : 'dashboard';
+} elseif ($reqController === 'AdminProduct') {
+    $currentActivePill = 'products';
+} elseif ($reqController === 'AdminOrder') {
+    $currentActivePill = 'orders';
+} elseif ($reqController === 'AdminCustomer') {
+    $currentActivePill = 'customers';
+} elseif ($reqController === 'AdminCoupon') {
+    $currentActivePill = 'coupons';
+} elseif ($reqController === 'AdminReport') {
+    $currentActivePill = 'reports';
+} elseif ($reqController === 'AdminAd') {
+    $currentActivePill = 'ads';
+} elseif ($reqController === 'AdminSetting') {
+    $currentActivePill = 'settings';
+}
+?>
+
+<body class="bg-cadra-bg text-gray-900 min-h-screen flex flex-col antialiased selection:bg-gray-900 selection:text-white">
+
+    <!-- 🌟 TOP NAVBAR (Capsule Pill Tabs Style) -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200/70 px-4 sm:px-6 py-2.5 transition-all duration-300">
+        <div class="max-w-[1700px] mx-auto flex items-center justify-between gap-3 sm:gap-4">
+            
+            <!-- Left: Brand Logo (Cadra Larkspur Inspired) -->
+            <div class="flex items-center space-x-3 flex-shrink-0">
+                <a href="index.php?controller=Admin&action=index" class="flex items-center space-x-2.5 group">
+                    <div class="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-105 transition">
+                        <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-extrabold tracking-tight text-gray-900 group-hover:text-teal-600 transition leading-tight">Cadra Studio</span>
+                        <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest leading-none">hquie Atelier</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Middle: Horizontal Pill Tabs Navigation (Smooth Switcher & Responsive Scroll) -->
+            <nav class="flex items-center space-x-1 bg-gray-100/90 p-1.5 rounded-full border border-gray-200/70 shadow-inner overflow-x-auto no-scrollbar max-w-full">
+                <button type="button" onclick="switchCadraTab('dashboard')" id="btn-tab-dashboard" class="cadra-nav-btn <?= $currentActivePill === 'dashboard' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Dashboard
+                </button>
+                <button type="button" onclick="switchCadraTab('products')" id="btn-tab-products" class="cadra-nav-btn <?= $currentActivePill === 'products' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Sản phẩm
+                </button>
+                <button type="button" onclick="switchCadraTab('orders')" id="btn-tab-orders" class="cadra-nav-btn <?= $currentActivePill === 'orders' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Đơn hàng
+                    <span class="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-orange-500 text-white">4</span>
+                </button>
+                <button type="button" onclick="switchCadraTab('customers')" id="btn-tab-customers" class="cadra-nav-btn <?= $currentActivePill === 'customers' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Khách hàng
+                </button>
+                <button type="button" onclick="switchCadraTab('coupons')" id="btn-tab-coupons" class="cadra-nav-btn <?= $currentActivePill === 'coupons' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Mã giảm giá
+                    <span class="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-teal-500 text-white">New</span>
+                </button>
+                <button type="button" onclick="switchCadraTab('reports')" id="btn-tab-reports" class="cadra-nav-btn <?= $currentActivePill === 'reports' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Báo cáo
+                </button>
+                <button type="button" onclick="switchCadraTab('ads')" id="btn-tab-ads" class="cadra-nav-btn <?= $currentActivePill === 'ads' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Quảng cáo
+                </button>
+                <button type="button" onclick="switchCadraTab('settings')" id="btn-tab-settings" class="cadra-nav-btn <?= $currentActivePill === 'settings' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
+                    Cài đặt
+                </button>
+            </nav>
+
+            <!-- Right: Actions & Profile -->
+            <div class="flex items-center space-x-3 flex-shrink-0">
+                <!-- Nút xem Shop -->
+                <a href="index.php" target="_blank" class="hidden sm:flex items-center text-xs font-bold bg-white hover:bg-gray-50 text-gray-700 px-3.5 py-2 rounded-full border border-gray-200 shadow-sm transition">
+                    <svg class="w-3.5 h-3.5 mr-1.5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    Xem Cửa Hàng
+                </a>
+
+                <!-- Notification Bell -->
+                <button onclick="toggleAdminNotifications()" class="relative p-2 text-gray-500 hover:text-gray-900 transition rounded-full hover:bg-gray-100 focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500"></span>
+                </button>
+
+                <!-- Profile Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleAdminProfileMenu()" class="flex items-center space-x-2 pl-2 focus:outline-none cursor-pointer">
+                        <img src="https://ui-avatars.com/api/?name=Admin+Noor&background=18191b&color=fff&bold=true" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-gray-200">
+                    </button>
+                    <!-- Profile Menu Dropdown -->
+                    <div id="adminProfileMenu" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 text-sm">
+                        <div class="px-4 py-2 border-b border-gray-100">
+                            <p class="font-bold text-gray-900">Admin Noor</p>
+                            <p class="text-xs text-gray-400">noor@hquie.studio</p>
+                        </div>
+                        <a href="index.php?controller=Profile&action=index" class="block px-4 py-2 hover:bg-gray-50 text-gray-700 text-xs font-semibold">Tài khoản quản trị</a>
+                        <a href="index.php?controller=Auth&action=logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 text-xs font-semibold">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <!-- Navigation -->
-        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-            <a href="index.php?controller=Admin&action=index" class="flex items-center justify-between px-4 py-3 rounded-lg font-semibold shadow-md <?= (!isset($_GET['controller']) || $_GET['controller'] === 'Admin') ? 'bg-primary-dark text-white' : 'text-gray-600 hover:bg-gray-50' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    TỔNG QUAN
-                </div>
-            </a>
-            
-            <a href="index.php?controller=AdminProduct&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminProduct' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                    SẢN PHẨM
-                </div>
-                <!-- Dropdown arrow icon có thể bỏ nếu không dùng dropdown sub-menu -->
-            </a>
-            
-            <a href="index.php?controller=AdminOrder&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminOrder' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    ĐƠN HÀNG
-                </div>
-            </a>
-            
-            <a href="index.php?controller=AdminCustomer&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminCustomer' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    KHÁCH HÀNG
-                </div>
-            </a>
-            
-            <a href="index.php?controller=AdminCoupon&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminCoupon' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
-                    MÃ GIẢM GIÁ
-                </div>
-            </a>
-            
-            <a href="index.php?controller=AdminReport&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminReport' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    BÁO CÁO
-                </div>
-                <!-- Dropdown arrow có thể bỏ -->
-            </a>
-            
-            <a href="index.php?controller=AdminAd&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminAd' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                    QUẢNG CÁO
-                </div>
-            </a>
-            
-            <a href="index.php?controller=AdminSetting&action=index" class="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg font-semibold transition <?= isset($_GET['controller']) && $_GET['controller'] === 'AdminSetting' ? 'bg-primary-dark text-white shadow-md hover:bg-primary-dark' : '' ?>">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    CÀI ĐẶT
-                </div>
-            </a>
-        </nav>
-    </aside>
+    </header>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-        
-        <!-- Top Navbar -->
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10">
-            <!-- Search -->
-            <div class="flex-1 max-w-xl relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </span>
-                <input type="text" placeholder="Tìm kiếm đơn hàng, sản phẩm..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:border-primary transition">
-            </div>
+    <!-- Global Tab Switcher Script (Works on ALL Admin Views) -->
+    <script>
+        function switchCadraTab(tabKey, pushHistory = true) {
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            const targetPane = document.getElementById('tab-' + tabKey);
 
-            <!-- Right Icons -->
-            <div class="flex items-center space-x-5 ml-4 text-gray-500">
-                <button class="relative hover:text-gray-800 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">3</span>
-                </button>
-                <button class="hover:text-gray-800 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                </button>
-                <button class="hover:text-gray-800 transition border-r border-gray-200 pr-5">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                </button>
+            if (tabPanes.length > 0 && targetPane) {
+                // 1. Nếu đang ở trang Dashboard SPA (có sẵn các pane) -> Chuyển tab mượt mà ngay trên trang
+                document.querySelectorAll('.cadra-nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.classList.add('text-gray-600');
+                });
+                const activeBtn = document.getElementById('btn-tab-' + tabKey);
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                    activeBtn.classList.remove('text-gray-600');
+                    activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
 
-                <!-- Profile -->
-                <div class="flex items-center cursor-pointer pl-1">
-                    <img src="https://ui-avatars.com/api/?name=Admin+Hquie&background=random" class="w-8 h-8 rounded-full object-cover mr-2">
-                    <span class="text-sm font-semibold text-gray-700">Admin Hquie</span>
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </div>
-        </header>
+                tabPanes.forEach(pane => {
+                    pane.classList.remove('active-tab');
+                    pane.classList.add('hidden-tab');
+                });
 
-        <!-- Main Scrollable Area -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto p-8">
+                targetPane.classList.remove('hidden-tab');
+                targetPane.classList.add('active-tab');
+
+                const tabTitles = {
+                    dashboard: { title: 'Dashboard', breadcrumb: 'Dashboard' },
+                    products: { title: 'Sản Phẩm', breadcrumb: 'Sản Phẩm & Kho' },
+                    orders: { title: 'Đơn Hàng', breadcrumb: 'Quản Lý Đơn Hàng' },
+                    customers: { title: 'Khách Hàng', breadcrumb: 'Quản Lý Khách Hàng' },
+                    coupons: { title: 'Mã Giảm Giá', breadcrumb: 'Mã Khuyến Mãi' },
+                    reports: { title: 'Báo Cáo', breadcrumb: 'Báo Cáo Doanh Thu' },
+                    ads: { title: 'Quảng Cáo', breadcrumb: 'Quảng Cáo & Banner' },
+                    settings: { title: 'Cài Đặt', breadcrumb: 'Cài Đặt Hệ Thống' }
+                };
+                const info = tabTitles[tabKey] || { title: 'Dashboard', breadcrumb: 'Dashboard' };
+                const pageTitle = document.getElementById('page-current-title');
+                const breadcrumbTitle = document.getElementById('breadcrumb-current-tab');
+                if (pageTitle) pageTitle.innerText = info.title;
+                if (breadcrumbTitle) breadcrumbTitle.innerText = info.breadcrumb;
+
+                if (pushHistory) {
+                    const currentUrl = new URL(window.location);
+                    currentUrl.searchParams.set('controller', 'Admin');
+                    currentUrl.searchParams.set('action', 'index');
+                    currentUrl.searchParams.set('tab', tabKey);
+                    window.history.pushState({ tab: tabKey }, '', currentUrl);
+                }
+            } else {
+                // 2. Nếu đang ở trang con riêng biệt (coupons, reports, ads...) -> Điều hướng về Dashboard mở đúng tab đó!
+                window.location.href = 'index.php?controller=Admin&action=index&tab=' + encodeURIComponent(tabKey);
+            }
+        }
+
+        // Global dropdowns
+        function toggleAdminProfileMenu() {
+            const m = document.getElementById('adminProfileMenu');
+            if (m) m.classList.toggle('hidden');
+        }
+        function toggleAdminNotifications() {
+            alert('Thông báo: 1 đơn hàng mới đang chờ duyệt, 1 sản phẩm sắp hết hàng!');
+        }
+        document.addEventListener('click', function(e) {
+            const profileMenu = document.getElementById('adminProfileMenu');
+            if (profileMenu && !e.target.closest('#adminProfileMenu') && !e.target.closest('button[onclick="toggleAdminProfileMenu()"]')) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+    </script>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-[1700px] w-full mx-auto px-4 sm:px-6 py-6 overflow-x-hidden">

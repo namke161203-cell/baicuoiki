@@ -125,62 +125,637 @@ require_once __DIR__ . '/partials/header.php';
     }
 </style>
 
-<!-- Shop By Category -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <h2 class="text-xl font-bold text-gray-900 uppercase tracking-widest mb-8 animate-fade-up">Khám phá theo danh mục</h2>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-up stagger-2">
-        <!-- Category Card -->
-        <a href="#" class="relative h-64 overflow-hidden group border border-gray-200">
-            <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-            <div class="absolute inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center transition group-hover:bg-opacity-50">
-                <h3 class="text-white text-xl font-bold uppercase text-center drop-shadow-md">Áo Khoác<br>& Da</h3>
+<!-- ============================================================== -->
+<!-- 🌟 BỘ SƯU TẬP TIÊU BIỂU (CURATED COLLECTION) - TAB FILTER & BENTO -->
+<!-- ============================================================== -->
+<section id="shop" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <!-- Section Header & Filter Pills -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b border-gray-200/80 pb-8">
+        <div>
+            <div class="flex items-center space-x-2 text-xs font-black uppercase tracking-widest text-primary mb-2">
+                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                <span>Winter Atelier &bull; Limited Edition 2026</span>
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black text-gray-950 tracking-tight">
+                Bộ Sưu Tập Mùa Đông
+            </h2>
+            <p class="text-sm text-gray-500 font-medium mt-1 max-w-xl">
+                Sự kết hợp hoàn hảo giữa sợi Cashmere tự nhiên, da cừu nhập khẩu và phom dáng đương đại.
+            </p>
+        </div>
+
+        <!-- Filter Pill Tabs (Smooth Tab Switcher) -->
+        <div class="flex items-center gap-1.5 bg-gray-100 p-1.5 rounded-full overflow-x-auto no-scrollbar shadow-inner max-w-full">
+            <button type="button" onclick="filterHomeProducts('all', this)" class="product-filter-btn active px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 whitespace-nowrap bg-gray-950 text-white shadow-sm cursor-pointer">
+                Tất Cả (<?= count($featuredProducts) ?>)
+            </button>
+            <button type="button" onclick="filterHomeProducts('Áo Khoác', this)" class="product-filter-btn px-4 py-2 rounded-full text-xs font-bold text-gray-600 hover:text-gray-950 transition-all duration-300 whitespace-nowrap cursor-pointer">
+                Áo Khoác & Da
+            </button>
+            <button type="button" onclick="filterHomeProducts('Áo Len', this)" class="product-filter-btn px-4 py-2 rounded-full text-xs font-bold text-gray-600 hover:text-gray-950 transition-all duration-300 whitespace-nowrap cursor-pointer">
+                Áo Len Cashmere
+            </button>
+            <button type="button" onclick="filterHomeProducts('Giày Boots', this)" class="product-filter-btn px-4 py-2 rounded-full text-xs font-bold text-gray-600 hover:text-gray-950 transition-all duration-300 whitespace-nowrap cursor-pointer">
+                Giày Boots
+            </button>
+            <button type="button" onclick="filterHomeProducts('Phụ Kiện', this)" class="product-filter-btn px-4 py-2 rounded-full text-xs font-bold text-gray-600 hover:text-gray-950 transition-all duration-300 whitespace-nowrap cursor-pointer">
+                Phụ Kiện Ấm
+            </button>
+        </div>
+    </div>
+
+    <!-- 🌟 BENTO PRODUCT SHOWCASE GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Spotlight Hero Product Card (Span 4) -->
+        <?php 
+        $spotlight = !empty($featuredProducts) ? $featuredProducts[0] : null; 
+        if ($spotlight):
+        ?>
+        <div class="lg:col-span-4 bg-gray-950 text-white rounded-3xl p-7 flex flex-col justify-between relative overflow-hidden group shadow-xl border border-gray-800">
+            <!-- Background Image with Ambient Glow -->
+            <div class="absolute inset-0 z-0">
+                <img src="<?= htmlspecialchars($spotlight['image']) ?>" alt="<?= htmlspecialchars($spotlight['name']) ?>" class="w-full h-full object-cover opacity-40 group-hover:opacity-50 group-hover:scale-105 transition-all duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/70 to-transparent"></div>
+            </div>
+
+            <!-- Top Floating Badges -->
+            <div class="relative z-10 flex items-center justify-between">
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-primary text-white shadow-md">
+                    ★ Spotlight of the Week
+                </span>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-white/10 backdrop-blur-md text-teal-300 border border-white/20">
+                    -20% Mùa Đông
+                </span>
+            </div>
+
+            <!-- Bottom Content -->
+            <div class="relative z-10 mt-64 pt-6">
+                <span class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                    <?= htmlspecialchars($spotlight['category_name'] ?? 'BST Tiêu Điểm') ?>
+                </span>
+                <h3 class="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mt-1 mb-2 leading-tight">
+                    <?= htmlspecialchars($spotlight['name']) ?>
+                </h3>
+                <p class="text-xs text-gray-300 font-medium line-clamp-2 mb-4 leading-relaxed">
+                    <?= htmlspecialchars($spotlight['description'] ?: 'Thiết kế phom rộng đương đại, lót dù giữ nhiệt cùng đường may tỉ mỉ chuẩn Atelier.') ?>
+                </p>
+
+                <!-- Color Options & Price -->
+                <div class="flex items-center justify-between pt-4 border-t border-white/10 mb-6">
+                    <div>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Giá niêm yết</span>
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-xl font-black text-white"><?= number_format($spotlight['price'], 0, ',', '.') ?>đ</span>
+                            <span class="text-xs text-gray-500 line-through font-semibold"><?= number_format($spotlight['price'] * 1.25, 0, ',', '.') ?>đ</span>
+                        </div>
+                    </div>
+                    <!-- Color Swatches -->
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-4 h-4 rounded-full bg-gray-900 border-2 border-white shadow-sm" title="Đen Tuyển"></span>
+                        <span class="w-4 h-4 rounded-full bg-stone-400 border-2 border-white/80 shadow-sm" title="Beige"></span>
+                        <span class="w-4 h-4 rounded-full bg-amber-800 border-2 border-white/80 shadow-sm" title="Camel"></span>
+                    </div>
+                </div>
+
+                <!-- Action CTA -->
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="index.php?controller=Product&action=detail&id=<?= $spotlight['id'] ?>" class="text-center py-3 rounded-full bg-white text-gray-950 font-bold text-xs uppercase tracking-wider hover:bg-gray-100 transition shadow-lg">
+                        Xem Chi Tiết
+                    </a>
+                    <button type="button" onclick="quickViewProduct(<?= htmlspecialchars(json_encode($spotlight)) ?>)" class="py-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-bold text-xs uppercase tracking-wider border border-white/20 transition flex items-center justify-center cursor-pointer">
+                        Xem Nhanh
+                    </button>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <!-- Right Column: Curated Product Grid (Span 8) -->
+        <div class="lg:col-span-8">
+            <div id="homeProductGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php 
+                // Hiển thị danh sách sản phẩm còn lại
+                $restProducts = !empty($featuredProducts) ? array_slice($featuredProducts, 1, 9) : [];
+                foreach ($restProducts as $index => $item): 
+                    $catTerm = $item['category_name'] ?? 'Thời trang';
+                    $origPrice = $item['price'] * 1.2;
+                ?>
+                <div class="product-item-card group bg-white rounded-3xl p-3.5 border border-gray-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+                     data-category="<?= htmlspecialchars($catTerm) ?>">
+                    
+                    <!-- Top Media Box -->
+                    <div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-3.5">
+                        <img src="<?= htmlspecialchars($item['image']) ?>" 
+                             alt="<?= htmlspecialchars($item['name']) ?>" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+
+                        <!-- Badge Top Left -->
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
+                            <?php if ($item['is_featured']): ?>
+                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gray-900 text-white shadow-sm">
+                                    ★ Hot Pick
+                                </span>
+                            <?php else: ?>
+                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-teal-600 text-white shadow-sm">
+                                    New 2026
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Wishlist Heart Button Top Right -->
+                        <button type="button" 
+                                onclick="toggleWishlist(<?= $item['id'] ?>, '<?= addslashes(htmlspecialchars($item['name'])) ?>', '<?= addslashes(htmlspecialchars($item['image'] ?? '')) ?>', <?= $item['price'] ?>)" 
+                                class="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 shadow-md backdrop-blur-sm transition cursor-pointer" 
+                                title="Lưu vào yêu thích">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </button>
+
+                        <!-- Hover Action Bar (Slide-up Glassmorphism) -->
+                        <div class="absolute inset-x-3 bottom-3 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
+                            <button type="button" onclick="quickViewProduct(<?= htmlspecialchars(json_encode($item)) ?>)" class="flex-1 py-2.5 rounded-xl bg-white/95 text-gray-900 hover:bg-white text-[11px] font-extrabold uppercase tracking-wider shadow-lg backdrop-blur-md transition flex items-center justify-center cursor-pointer">
+                                Xem Nhanh
+                            </button>
+                            <a href="index.php?controller=Product&action=detail&id=<?= $item['id'] ?>" class="w-10 h-10 rounded-xl bg-gray-900 hover:bg-black text-white flex items-center justify-center shadow-lg transition" title="Mua ngay">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Info Box -->
+                    <div class="px-1.5 pb-1">
+                        <!-- Category & Rating -->
+                        <div class="flex items-center justify-between text-[11px] font-semibold text-gray-400 mb-1">
+                            <span class="uppercase tracking-wider"><?= htmlspecialchars($catTerm) ?></span>
+                            <div class="flex items-center text-amber-500 text-xs">
+                                <span>★</span>
+                                <span class="text-gray-600 font-bold ml-0.5 text-[10px]">4.9</span>
+                            </div>
+                        </div>
+
+                        <!-- Product Title -->
+                        <h4 class="text-sm font-bold text-gray-900 uppercase truncate group-hover:text-primary transition leading-tight mb-2">
+                            <a href="index.php?controller=Product&action=detail&id=<?= $item['id'] ?>">
+                                <?= htmlspecialchars($item['name']) ?>
+                            </a>
+                        </h4>
+
+                        <!-- Price & Color Dots -->
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <div class="flex items-baseline space-x-1.5">
+                                <span class="text-sm font-black text-gray-950"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
+                                <span class="text-[10px] text-gray-400 line-through font-semibold"><?= number_format($origPrice, 0, ',', '.') ?>đ</span>
+                            </div>
+                            
+                            <!-- Variant Colors Indicator -->
+                            <div class="flex items-center -space-x-1">
+                                <span class="w-3 h-3 rounded-full bg-gray-900 border border-white ring-1 ring-gray-200"></span>
+                                <span class="w-3 h-3 rounded-full bg-stone-400 border border-white ring-1 ring-gray-200"></span>
+                                <span class="w-3 h-3 rounded-full bg-blue-900 border border-white ring-1 ring-gray-200"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- View All Products Button -->
+            <div class="mt-10 text-center">
+                <a href="index.php?controller=Product&action=list" class="inline-flex items-center px-8 py-3.5 rounded-full border-2 border-gray-900 text-gray-900 font-black text-xs uppercase tracking-widest hover:bg-gray-900 hover:text-white transition duration-300 shadow-sm">
+                    Khám Phá Toàn Bộ BST (<?= count($featuredProducts) ?> Sản Phẩm) &rarr;
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 🧥 WINTER LOOKBOOK 2026 - COMPLETE THE LOOK (PHỐI ĐỒ ĐẲNG CẤP) -->
+<!-- ============================================================== -->
+<section class="bg-stone-100/70 py-20 border-y border-stone-200/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            <!-- Left: Lookbook Full Outfit Image with Interactive Hotspots -->
+            <div class="lg:col-span-6 relative rounded-3xl overflow-hidden shadow-2xl group aspect-[4/5] bg-gray-900">
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=900&auto=format&fit=crop" 
+                     alt="Winter Outfit Lookbook" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                
+                <!-- Overlay gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
+
+                <!-- Lookbook Label -->
+                <div class="absolute top-6 left-6 z-10">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/90 text-gray-900 shadow-md">
+                        Style Guide &bull; Winter 2026
+                    </span>
+                    <h3 class="text-2xl font-black text-white uppercase tracking-tight mt-2 drop-shadow-md">
+                        Minimalist Urban Warmth
+                    </h3>
+                </div>
+
+                <!-- Hotspot 1: Coat -->
+                <div class="absolute top-[35%] left-[48%] z-20 group/pin cursor-pointer">
+                    <span class="relative flex h-5 w-5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-5 w-5 bg-white border-2 border-primary shadow-lg items-center justify-center text-[9px] font-black text-primary">+</span>
+                    </span>
+                    <!-- Tooltip -->
+                    <div class="hidden group-hover/pin:block absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-xl">
+                        Áo Khoác Phao Đại Hàn &bull; 1.250.000đ
+                    </div>
+                </div>
+
+                <!-- Hotspot 2: Sweater -->
+                <div class="absolute top-[55%] left-[52%] z-20 group/pin cursor-pointer">
+                    <span class="relative flex h-5 w-5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-5 w-5 bg-white border-2 border-primary shadow-lg items-center justify-center text-[9px] font-black text-primary">+</span>
+                    </span>
+                    <div class="hidden group-hover/pin:block absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-xl">
+                        Áo Len Cổ Lọ Cashmere &bull; 550.000đ
+                    </div>
+                </div>
+
+                <!-- Hotspot 3: Boots -->
+                <div class="absolute bottom-[18%] left-[42%] z-20 group/pin cursor-pointer">
+                    <span class="relative flex h-5 w-5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-5 w-5 bg-white border-2 border-primary shadow-lg items-center justify-center text-[9px] font-black text-primary">+</span>
+                    </span>
+                    <div class="hidden group-hover/pin:block absolute -top-12 left-1/2 -translate-x-1/2 bg-gray-900/95 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap shadow-xl">
+                        Giày Boots Da Cao Cổ &bull; 850.000đ
+                    </div>
+                </div>
+
+                <!-- Bottom Caption -->
+                <div class="absolute bottom-6 left-6 right-6 z-10 flex items-center justify-between text-xs text-gray-300 font-medium">
+                    <span>Phối đồ chuẩn phong cách Thu Đông Seoul 2026</span>
+                    <span class="text-white font-bold">Chạm vào điểm tròn (+) để xem</span>
+                </div>
+            </div>
+
+            <!-- Right: "Complete The Look" Products Box -->
+            <div class="lg:col-span-6 space-y-6">
+                <div>
+                    <span class="text-xs font-black uppercase tracking-widest text-primary">Gợi Ý Phối Đồ Trọn Bộ</span>
+                    <h3 class="text-3xl font-black text-gray-950 uppercase tracking-tight mt-1">
+                        Complete The Look
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-500 font-medium mt-1 leading-relaxed">
+                        Sở hữu trọn bộ trang phục được các Stylist hàng đầu tại hquie tuyển chọn để tự tin dạo phố mà không cần đắn đo cách phối.
+                    </p>
+                </div>
+
+                <!-- Set Products Mini List -->
+                <div class="space-y-3.5">
+                    <!-- Item 1 -->
+                    <div class="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:border-gray-900 transition">
+                        <div class="flex items-center space-x-3.5">
+                            <img src="https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=160&auto=format&fit=crop" class="w-14 h-16 object-cover rounded-xl bg-gray-100">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Lớp Ngoài</span>
+                                <h4 class="text-xs font-bold text-gray-900 uppercase">Áo Khoác Phao Đại Hàn Siêu Ấm</h4>
+                                <span class="text-xs font-black text-gray-950">1.250.000đ</span>
+                            </div>
+                        </div>
+                        <a href="index.php?controller=Product&action=detail&id=2" class="px-4 py-1.5 rounded-full bg-gray-100 hover:bg-gray-900 hover:text-white text-xs font-bold transition">Xem</a>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:border-gray-900 transition">
+                        <div class="flex items-center space-x-3.5">
+                            <img src="https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=160&auto=format&fit=crop" class="w-14 h-16 object-cover rounded-xl bg-gray-100">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Lớp Trong</span>
+                                <h4 class="text-xs font-bold text-gray-900 uppercase">Áo Len Cổ Lọ Cashmere Nam Nữ</h4>
+                                <span class="text-xs font-black text-gray-950">550.000đ</span>
+                            </div>
+                        </div>
+                        <a href="index.php?controller=Product&action=detail&id=3" class="px-4 py-1.5 rounded-full bg-gray-100 hover:bg-gray-900 hover:text-white text-xs font-bold transition">Xem</a>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-gray-200/80 shadow-sm hover:border-gray-900 transition">
+                        <div class="flex items-center space-x-3.5">
+                            <img src="https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=160&auto=format&fit=crop" class="w-14 h-16 object-cover rounded-xl bg-gray-100">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Giày & Phụ Kiện</span>
+                                <h4 class="text-xs font-bold text-gray-900 uppercase">Giày Boots Da Cao Cổ Lót Lông</h4>
+                                <span class="text-xs font-black text-gray-950">850.000đ</span>
+                            </div>
+                        </div>
+                        <a href="index.php?controller=Product&action=detail&id=4" class="px-4 py-1.5 rounded-full bg-gray-100 hover:bg-gray-900 hover:text-white text-xs font-bold transition">Xem</a>
+                    </div>
+                </div>
+
+                <!-- Bundle Box -->
+                <div class="p-5 rounded-2xl bg-gray-950 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-teal-400">Combo Tiết Kiệm 15%</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-black bg-red-500 text-white">SAVE 397K</span>
+                        </div>
+                        <div class="flex items-baseline space-x-2 mt-1">
+                            <span class="text-2xl font-black text-white">2.253.000đ</span>
+                            <span class="text-xs text-gray-400 line-through">2.650.000đ</span>
+                        </div>
+                    </div>
+                    <a href="index.php?controller=Product&action=detail&id=2" class="w-full sm:w-auto px-6 py-3 rounded-full bg-teal-500 hover:bg-teal-400 text-gray-950 font-black text-xs uppercase tracking-wider transition text-center shadow-lg">
+                        Mua Trọn Bộ Set Này &rarr;
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 🧭 KHÁM PHÁ THEO DANH MỤC (CATEGORY CARDS REDESIGNED) -->
+<!-- ============================================================== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+        <div>
+            <span class="text-xs font-black uppercase tracking-widest text-primary">Danh Mục Phong Cách</span>
+            <h2 class="text-3xl font-black text-gray-950 uppercase tracking-tight mt-1">
+                Khám Phá Theo Nhóm Đồ
+            </h2>
+        </div>
+        <a href="index.php?controller=Product&action=list" class="text-xs font-bold text-gray-900 hover:text-primary transition uppercase tracking-wider">
+            Xem Tất Cả Danh Mục &rarr;
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Cat 1 -->
+        <a href="index.php?controller=Product&action=search&keyword=Áo Khoác" class="group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-200/80">
+            <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-white">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block mb-1">5 Sản phẩm</span>
+                <h3 class="text-xl font-black uppercase tracking-tight leading-tight">Áo Khoác & Da</h3>
+                <span class="inline-flex items-center text-xs font-bold text-teal-400 mt-2 group-hover:translate-x-1 transition-transform">
+                    Khám phá &rarr;
+                </span>
             </div>
         </a>
-        <a href="#" class="relative h-64 overflow-hidden group border border-gray-200">
-            <img src="https://images.unsplash.com/photo-1612462766564-28b7ab66606a?w=500&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-            <div class="absolute inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center transition group-hover:bg-opacity-50">
-                <h3 class="text-white text-xl font-bold uppercase text-center drop-shadow-md">Áo Len<br>Mùa Đông</h3>
+
+        <!-- Cat 2 -->
+        <a href="index.php?controller=Product&action=search&keyword=Áo Len" class="group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-200/80">
+            <img src="https://images.unsplash.com/photo-1612462766564-28b7ab66606a?w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-white">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block mb-1">3 Sản phẩm</span>
+                <h3 class="text-xl font-black uppercase tracking-tight leading-tight">Áo Len Mùa Đông</h3>
+                <span class="inline-flex items-center text-xs font-bold text-teal-400 mt-2 group-hover:translate-x-1 transition-transform">
+                    Khám phá &rarr;
+                </span>
             </div>
         </a>
-        <a href="#" class="relative h-64 overflow-hidden group border border-gray-200">
-            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-            <div class="absolute inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center transition group-hover:bg-opacity-50">
-                <h3 class="text-white text-xl font-bold uppercase text-center drop-shadow-md">Giày Boots</h3>
+
+        <!-- Cat 3 -->
+        <a href="index.php?controller=Product&action=search&keyword=Giày Boots" class="group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-200/80">
+            <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-white">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block mb-1">2 Sản phẩm</span>
+                <h3 class="text-xl font-black uppercase tracking-tight leading-tight">Giày Boots Da</h3>
+                <span class="inline-flex items-center text-xs font-bold text-teal-400 mt-2 group-hover:translate-x-1 transition-transform">
+                    Khám phá &rarr;
+                </span>
             </div>
         </a>
-        <a href="#" class="relative h-64 overflow-hidden group border border-gray-200">
-            <img src="https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=500&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-            <div class="absolute inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center transition group-hover:bg-opacity-50">
-                <h3 class="text-white text-xl font-bold uppercase text-center drop-shadow-md">Phụ Kiện<br>Giữ Ấm</h3>
+
+        <!-- Cat 4 -->
+        <a href="index.php?controller=Product&action=search&keyword=Phụ Kiện" class="group relative aspect-[3/4] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-200/80">
+            <img src="https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=600&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-white">
+                <span class="text-[10px] font-bold text-gray-300 uppercase tracking-wider block mb-1">3 Sản phẩm</span>
+                <h3 class="text-xl font-black uppercase tracking-tight leading-tight">Phụ Kiện Giữ Ấm</h3>
+                <span class="inline-flex items-center text-xs font-bold text-teal-400 mt-2 group-hover:translate-x-1 transition-transform">
+                    Khám phá &rarr;
+                </span>
             </div>
         </a>
     </div>
-</div>
+</section>
 
-<!-- Featured Products -->
-<div id="shop" class="bg-gray-50 py-16">
+<!-- ============================================================== -->
+<!-- 🛡️ CAM KẾT GIÁ TRỊ & DỊCH VỤ ĐẶC QUYỀN (BRAND TRUST PILLARS) -->
+<!-- ============================================================== -->
+<section class="border-t border-gray-200/80 bg-white py-14">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-xl font-bold text-gray-900 uppercase tracking-widest mb-8">Featured Products</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <?php foreach ($featuredProducts as $item): ?>
-            <div class="group bg-white p-4 border border-gray-100 shadow-sm hover:shadow-lg transition">
-                <div class="relative aspect-[3/4] overflow-hidden mb-4 bg-gray-100">
-                    <img src="<?= $item['image'] ?>" alt="<?= $item['name'] ?>" class="object-cover w-full h-full group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 flex items-end opacity-0 group-hover:opacity-100 transition-opacity">
-                        <a href="index.php?controller=Product&action=detail&id=<?= $item['id'] ?>" class="w-full bg-primary text-white text-center py-3 font-bold uppercase hover:bg-primary-dark transition text-sm tracking-wider">
-                            Mua Ngay
-                        </a>
-                    </div>
+            
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-stone-100 text-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
                 </div>
-                <h3 class="text-sm font-bold text-gray-900 uppercase truncate">
-                    <a href="index.php?controller=Product&action=detail&id=<?= $item['id'] ?>" class="hover:text-primary"><?= $item['name'] ?></a>
-                </h3>
-                <p class="text-sm font-bold text-gray-600 mt-1"><?= number_format($item['price'], 0, ',', '.') ?>đ</p>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Giao Hàng Hỏa Tốc</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Miễn phí vận chuyển toàn quốc cho đơn hàng từ 500.000đ.</p>
+                </div>
             </div>
-            <?php endforeach; ?>
+
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-stone-100 text-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Đổi Hàng 30 Ngày</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Thử đồ tại nhà, đổi size và mẫu tận nơi hoàn toàn miễn phí.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-stone-100 text-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Chất Liệu Tuyển Chọn</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Len Cashmere, dạ ép và da bò nguyên bản nhập khẩu 100%.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-stone-100 text-gray-900 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider">Stylist Tư Vấn 24/7</h4>
+                    <p class="text-xs text-gray-500 mt-1 leading-relaxed">Đội ngũ tư vấn phối đồ và hướng dẫn chọn size chuẩn form cá nhân.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================== -->
+<!-- 🔍 QUICK VIEW MODAL (XEM NHANH SẢN PHẨM TRỰC QUAN) -->
+<!-- ============================================================== -->
+<div id="quickViewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl border border-gray-100 relative max-h-[90vh] overflow-y-auto">
+        <button onclick="closeQuickViewModal()" class="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition cursor-pointer">
+            &times;
+        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- Modal Image Preview -->
+            <div class="bg-gray-100 aspect-[3/4] md:aspect-auto">
+                <img id="qvImage" src="" alt="" class="w-full h-full object-cover">
+            </div>
+
+            <!-- Modal Info & Form -->
+            <div class="p-6 sm:p-8 flex flex-col justify-between">
+                <div>
+                    <span id="qvCategory" class="text-[10px] font-bold text-primary uppercase tracking-widest block mb-1">Áo Khoác</span>
+                    <h3 id="qvTitle" class="text-xl font-black text-gray-900 uppercase tracking-tight mb-2">Tên Sản Phẩm</h3>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span id="qvPrice" class="text-2xl font-black text-gray-950">1.250.000đ</span>
+                        <span id="qvOrigPrice" class="text-sm text-gray-400 line-through font-semibold">1.500.000đ</span>
+                    </div>
+
+                    <p id="qvDesc" class="text-xs text-gray-500 leading-relaxed mb-6">
+                        Chất liệu vải cao cấp giữ nhiệt, đường cắt may tỉ mỉ tôn vinh phong thái thời thượng.
+                    </p>
+
+                    <!-- Form Add to Cart -->
+                    <form action="index.php?controller=Cart&action=add" method="POST" class="space-y-4">
+                        <input type="hidden" id="qvProductId" name="product_id" value="">
+
+                        <!-- Size Selector -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1.5">Chọn Size</label>
+                            <div class="flex gap-2">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size" value="S" class="peer sr-only">
+                                    <span class="px-3.5 py-1.5 rounded-xl border border-gray-300 peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white text-xs font-bold transition inline-block">S</span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size" value="M" checked class="peer sr-only">
+                                    <span class="px-3.5 py-1.5 rounded-xl border border-gray-300 peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white text-xs font-bold transition inline-block">M</span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size" value="L" class="peer sr-only">
+                                    <span class="px-3.5 py-1.5 rounded-xl border border-gray-300 peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white text-xs font-bold transition inline-block">L</span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size" value="XL" class="peer sr-only">
+                                    <span class="px-3.5 py-1.5 rounded-xl border border-gray-300 peer-checked:border-gray-900 peer-checked:bg-gray-900 peer-checked:text-white text-xs font-bold transition inline-block">XL</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Color Selector -->
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase mb-1.5">Màu Sắc</label>
+                            <select name="color" class="w-full border border-gray-300 p-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:border-gray-900 bg-white">
+                                <option value="Đen Tuyển">Đen Tuyển (Black)</option>
+                                <option value="Nâu Camel">Nâu Camel</option>
+                                <option value="Xám Tro">Xám Tro (Grey)</option>
+                                <option value="Beige">Beige Sữa</option>
+                            </select>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="flex items-center space-x-3 pt-2">
+                            <label class="text-xs font-bold text-gray-700 uppercase">Số lượng:</label>
+                            <input type="number" name="quantity" value="1" min="1" max="10" class="w-16 border border-gray-300 p-2 rounded-xl text-xs font-bold text-center">
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100">
+                            <button type="submit" name="buy_now" value="1" class="py-3 rounded-full bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase tracking-wider transition text-center shadow-md">
+                                Mua Ngay
+                            </button>
+                            <button type="submit" class="py-3 rounded-full bg-primary hover:bg-primary-dark text-white text-xs font-bold uppercase tracking-wider transition text-center shadow-md">
+                                + Thêm Vào Giỏ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- ============================================================== -->
+<!-- ⚡ JAVASCRIPT TƯƠNG TÁC LỌC DANH MỤC VÀ QUICK VIEW -->
+<!-- ============================================================== -->
+<script>
+    // 1. Lọc sản phẩm theo danh mục mượt mà không reload
+    function filterHomeProducts(category, btnElement) {
+        // Cập nhật trạng thái nút bấm
+        document.querySelectorAll('.product-filter-btn').forEach(btn => {
+            btn.classList.remove('bg-gray-950', 'text-white', 'shadow-sm', 'active');
+            btn.classList.add('text-gray-600');
+        });
+        if (btnElement) {
+            btnElement.classList.add('bg-gray-950', 'text-white', 'shadow-sm', 'active');
+            btnElement.classList.remove('text-gray-600');
+        }
+
+        // Lọc các thẻ sản phẩm trong lưới
+        const cards = document.querySelectorAll('.product-item-card');
+        cards.forEach(card => {
+            const cardCat = card.getAttribute('data-category') || '';
+            if (category === 'all' || cardCat.toLowerCase().includes(category.toLowerCase())) {
+                card.style.display = 'flex';
+                card.style.animation = 'fade-up 0.4s ease forwards';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // 2. Mở Quick View Modal
+    function quickViewProduct(item) {
+        if (!item) return;
+        document.getElementById('qvProductId').value = item.id;
+        document.getElementById('qvTitle').innerText = item.name;
+        document.getElementById('qvCategory').innerText = item.category_name || 'Bộ sưu tập mùa đông';
+        document.getElementById('qvImage').src = item.image;
+        document.getElementById('qvImage').alt = item.name;
+        
+        const priceFormatted = Number(item.price).toLocaleString('vi-VN') + 'đ';
+        const origPriceFormatted = Number(item.price * 1.2).toLocaleString('vi-VN') + 'đ';
+        document.getElementById('qvPrice').innerText = priceFormatted;
+        document.getElementById('qvOrigPrice').innerText = origPriceFormatted;
+
+        if (item.description) {
+            document.getElementById('qvDesc').innerText = item.description;
+        }
+
+        const modal = document.getElementById('quickViewModal');
+        modal.classList.remove('hidden');
+    }
+
+    function closeQuickViewModal() {
+        const modal = document.getElementById('quickViewModal');
+        modal.classList.add('hidden');
+    }
+
+    // Đóng khi click ngoài modal
+    document.addEventListener('click', function(e) {
+        const modal = document.getElementById('quickViewModal');
+        if (modal && !modal.classList.contains('hidden') && e.target === modal) {
+            closeQuickViewModal();
+        }
+    });
+
+    // Đóng khi bấm phím Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeQuickViewModal();
+        }
+    });
+</script>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>
 
