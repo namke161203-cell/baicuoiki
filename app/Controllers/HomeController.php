@@ -3,10 +3,16 @@ require_once __DIR__ . '/BaseController.php';
 require_once __DIR__ . '/../Models/ProductModel.php';
 
 class HomeController extends BaseController {
+    
+    private $productModel;
+
+    public function __construct() {
+        $this->productModel = new ProductModel();
+    }
+
     public function index() {
-        $productModel = new ProductModel();
-        $featuredProducts = $productModel->getFeaturedProducts(16);
-        $categories = $productModel->getCategoriesWithCount();
+        $featuredProducts = $this->productModel->getFeaturedProducts(16);
+        $categories = $this->productModel->getCategoriesWithCount();
         
         // Truyền data ra view
         $this->render('home', [

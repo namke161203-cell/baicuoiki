@@ -5,21 +5,30 @@ class Database
     private $db_name = "clothing_store";
     private $username = "root";
     private $password = "";
+    private static $sharedConn = null; // Caching kết nối dùng chung (Singleton Connection Pool)
     public $conn;
 
     public function getConnection()
     {
-        $this->conn = null;
+        // Tối ưu hiệu năng: Tái sử dụng kết nối đã có, không mở lại kết nối mới cho mỗi Model
+        if (self::$sharedConn !== null) {
+            $this->conn = self::$sharedConn;
+            return $this->conn;
+        }
 
         try {
             // Sử dụng PDO để kết nối an toàn, hỗ trợ prepared statements chống SQL Injection
             $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8",
+                "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=utf8mb4",
                 $this->username,
-                $this->password
+                $this->password,
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false, // Sử dụng Native Prepared Statements của MySQL để tối ưu tốc độ & bảo mật
+                ]
             );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); // Mặc định trả về mảng kết hợp
+            self::$sharedConn = $this->conn;
         } catch (PDOException $exception) {
             die("Lỗi kết nối CSDL: " . $exception->getMessage());
         }

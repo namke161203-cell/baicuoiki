@@ -44,13 +44,13 @@ require_once __DIR__ . '/partials/header.php';
                     <?php unset($_SESSION['cart_success']); ?>
                 <?php endif; ?>
 
-                <h1 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-2"><?= $product['name'] ?></h1>
+                <h1 class="text-2xl font-bold text-gray-900 uppercase tracking-tight mb-2"><?= htmlspecialchars($product['name']) ?></h1>
                 <p class="text-lg font-bold text-gray-900 mb-6">- <?= number_format($product['price'], 0, ',', '.') ?>đ</p>
                 
-                <p class="text-sm text-gray-600 mb-8"><?= nl2br($product['description']) ?></p>
+                <div class="text-sm text-gray-600 mb-8"><?= nl2br(htmlspecialchars($product['description'])) ?></div>
 
                 <form action="index.php?controller=Cart&action=add" method="POST" id="addToCartForm">
-                    <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                    <input type="hidden" name="product_id" value="<?= (int)$product['id'] ?>">
                     
                     <!-- Lựa chọn Cỡ -->
                     <div class="mb-6">
@@ -67,9 +67,9 @@ require_once __DIR__ . '/partials/header.php';
                             foreach ($sizes as $index => $size): 
                             ?>
                             <div>
-                                <input type="radio" id="size-<?= $index ?>" name="size" value="<?= $size ?>" class="peer hidden" required>
+                                <input type="radio" id="size-<?= $index ?>" name="size" value="<?= htmlspecialchars($size) ?>" class="peer hidden" required>
                                 <label for="size-<?= $index ?>" class="block cursor-pointer px-6 py-2 border border-gray-300 text-sm font-bold text-gray-700 hover:border-gray-900 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white transition uppercase text-center min-w-[3rem]">
-                                    <?= $size ?>
+                                    <?= htmlspecialchars($size) ?>
                                 </label>
                             </div>
                             <?php endforeach; ?>
@@ -84,7 +84,7 @@ require_once __DIR__ . '/partials/header.php';
                     <input type="hidden" name="color" value="<?= $firstColor ?>">
                     <input type="hidden" name="quantity" value="1">
 
-                    <button type="submit" class="w-full bg-primary text-white font-bold py-4 mb-3 uppercase tracking-wider hover:bg-primary-dark transition text-sm">
+                    <button type="button" onclick="submitAddToCart(this)" class="w-full bg-primary text-white font-bold py-4 mb-3 uppercase tracking-wider hover:bg-primary-dark transition text-sm shadow-md">
                         Thêm vào giỏ
                     </button>
                     <button type="submit" name="buy_now" value="1" class="w-full bg-[#1c5666] text-white font-bold py-4 mb-3 uppercase tracking-wider hover:bg-gray-900 transition text-sm">
@@ -189,10 +189,40 @@ require_once __DIR__ . '/partials/header.php';
         m.classList.remove('flex');
     }
 
-    document.getElementById('addToCartForm').addEventListener('submit', function(e) {
-        const btn = this.querySelector('button[type="submit"]');
-        btn.innerHTML = 'ĐANG THÊM...';
+    const IS_USER_LOGGED_IN = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+
+    function checkLoginRequired() {
+        if (!IS_USER_LOGGED_IN) {
+            showToast('Vui lòng đăng nhập để thêm vào giỏ hoặc mua hàng!', 'warning');
+            setTimeout(() => {
+                window.location.href = 'index.php?controller=Auth&action=login';
+            }, 800);
+            return false;
+        }
+        return true;
+    }
+
+    // Kiểm tra đăng nhập khi submit form Mua ngay
+    document.getElementById('addToCartForm')?.addEventListener('submit', function(e) {
+        if (!checkLoginRequired()) {
+            e.preventDefault();
+        }
     });
+
+    function submitAddToCart(btnEl) {
+        if (!checkLoginRequired()) return;
+
+        const form = document.getElementById('addToCartForm');
+        const selectedSize = form.querySelector('input[name="size"]:checked');
+        if (!selectedSize) {
+            showToast('Vui lòng chọn kích cỡ (Size) trước khi thêm vào giỏ hàng!', 'error');
+            return;
+        }
+        const productId = form.querySelector('input[name="product_id"]').value;
+        const color = form.querySelector('input[name="color"]').value;
+        const quantity = form.querySelector('input[name="quantity"]').value;
+        window.addToCartAjax(productId, color, selectedSize.value, quantity, btnEl);
+    }
 </script>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>

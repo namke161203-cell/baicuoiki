@@ -89,3 +89,35 @@ CREATE TABLE order_items (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL
 );
+
+-- =========================================================================
+-- DATABASE ENGINEER: CHỈ MỤC TỐI ƯU HIỆU NĂNG (INDEXING STRATEGY)
+-- =========================================================================
+
+-- 1. Tối ưu tra cứu biến thể (product_id, size, color) cho Giỏ hàng & Checkout (Chống quét toàn bảng)
+CREATE INDEX idx_variants_lookup ON product_variants(product_id, size, color);
+
+-- 2. Tối ưu lấy sản phẩm nổi bật / sản phẩm mới sắp xếp theo ngày
+CREATE INDEX idx_products_featured ON products(is_featured, created_at DESC);
+
+-- 3. Tối ưu lịch sử đơn hàng của người dùng
+CREATE INDEX idx_orders_user_created ON orders(user_id, created_at DESC);
+
+-- 4. Tối ưu tra cứu chi tiết đơn hàng theo order_id
+CREATE INDEX idx_order_items_order ON order_items(order_id);
+
+-- 5. Bảng lưu trữ giỏ hàng đồng bộ (Persistent Cart cho tài khoản đã đăng nhập)
+CREATE TABLE IF NOT EXISTS cart_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    product_id INT NOT NULL,
+    variant_id INT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL,
+    UNIQUE KEY uq_user_product_variant (user_id, product_id, variant_id)
+);
+

@@ -235,89 +235,13 @@ require_once __DIR__ . '/partials/header.php';
         <div class="lg:col-span-8">
             <div id="homeProductGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php 
-                // Hiển thị danh sách sản phẩm còn lại
+                // Hiển thị danh sách sản phẩm sử dụng Atomic Design Component (Molecule)
                 $restProducts = !empty($featuredProducts) ? array_slice($featuredProducts, 1, 9) : [];
-                foreach ($restProducts as $index => $item): 
-                    $catTerm = $item['category_name'] ?? 'Thời trang';
-                    $origPrice = $item['price'] * 1.2;
+                foreach ($restProducts as $index => $item) {
+                    $product = $item;
+                    include __DIR__ . '/components/product_card.php';
+                }
                 ?>
-                <div class="product-item-card group bg-white rounded-3xl p-3.5 border border-gray-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-                     data-category="<?= htmlspecialchars($catTerm) ?>">
-                    
-                    <!-- Top Media Box -->
-                    <div class="relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-3.5">
-                        <img src="<?= htmlspecialchars($item['image']) ?>" 
-                             alt="<?= htmlspecialchars($item['name']) ?>" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
-
-                        <!-- Badge Top Left -->
-                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
-                            <?php if ($item['is_featured']): ?>
-                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gray-900 text-white shadow-sm">
-                                    ★ Hot Pick
-                                </span>
-                            <?php else: ?>
-                                <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-teal-600 text-white shadow-sm">
-                                    New 2026
-                                </span>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Wishlist Heart Button Top Right -->
-                        <button type="button" 
-                                onclick="toggleWishlist(<?= $item['id'] ?>, '<?= addslashes(htmlspecialchars($item['name'])) ?>', '<?= addslashes(htmlspecialchars($item['image'] ?? '')) ?>', <?= $item['price'] ?>)" 
-                                class="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 shadow-md backdrop-blur-sm transition cursor-pointer" 
-                                title="Lưu vào yêu thích">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                        </button>
-
-                        <!-- Hover Action Bar (Slide-up Glassmorphism) -->
-                        <div class="absolute inset-x-3 bottom-3 flex gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
-                            <button type="button" onclick="quickViewProduct(<?= htmlspecialchars(json_encode($item)) ?>)" class="flex-1 py-2.5 rounded-xl bg-white/95 text-gray-900 hover:bg-white text-[11px] font-extrabold uppercase tracking-wider shadow-lg backdrop-blur-md transition flex items-center justify-center cursor-pointer">
-                                Xem Nhanh
-                            </button>
-                            <a href="index.php?controller=Product&action=detail&id=<?= $item['id'] ?>" class="w-10 h-10 rounded-xl bg-gray-900 hover:bg-black text-white flex items-center justify-center shadow-lg transition" title="Mua ngay">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Bottom Info Box -->
-                    <div class="px-1.5 pb-1">
-                        <!-- Category & Rating -->
-                        <div class="flex items-center justify-between text-[11px] font-semibold text-gray-400 mb-1">
-                            <span class="uppercase tracking-wider"><?= htmlspecialchars($catTerm) ?></span>
-                            <div class="flex items-center text-amber-500 text-xs">
-                                <span>★</span>
-                                <span class="text-gray-600 font-bold ml-0.5 text-[10px]">4.9</span>
-                            </div>
-                        </div>
-
-                        <!-- Product Title -->
-                        <h4 class="text-sm font-bold text-gray-900 uppercase truncate group-hover:text-primary transition leading-tight mb-2">
-                            <a href="index.php?controller=Product&action=detail&id=<?= $item['id'] ?>">
-                                <?= htmlspecialchars($item['name']) ?>
-                            </a>
-                        </h4>
-
-                        <!-- Price & Color Dots -->
-                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
-                            <div class="flex items-baseline space-x-1.5">
-                                <span class="text-sm font-black text-gray-950"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
-                                <span class="text-[10px] text-gray-400 line-through font-semibold"><?= number_format($origPrice, 0, ',', '.') ?>đ</span>
-                            </div>
-                            
-                            <!-- Variant Colors Indicator -->
-                            <div class="flex items-center -space-x-1">
-                                <span class="w-3 h-3 rounded-full bg-gray-900 border border-white ring-1 ring-gray-200"></span>
-                                <span class="w-3 h-3 rounded-full bg-stone-400 border border-white ring-1 ring-gray-200"></span>
-                                <span class="w-3 h-3 rounded-full bg-blue-900 border border-white ring-1 ring-gray-200"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <?php endforeach; ?>
             </div>
 
             <!-- View All Products Button -->
@@ -626,7 +550,7 @@ require_once __DIR__ . '/partials/header.php';
                     </p>
 
                     <!-- Form Add to Cart -->
-                    <form action="index.php?controller=Cart&action=add" method="POST" class="space-y-4">
+                    <form action="index.php?controller=Cart&action=add" method="POST" id="quickViewForm" class="space-y-4">
                         <input type="hidden" id="qvProductId" name="product_id" value="">
 
                         <!-- Size Selector -->
@@ -735,6 +659,18 @@ require_once __DIR__ . '/partials/header.php';
         const modal = document.getElementById('quickViewModal');
         modal.classList.remove('hidden');
     }
+
+    // 3. Kiểm tra đăng nhập khi submit Quick View form (Mua ngay / Thêm giỏ)
+    const IS_USER_LOGGED_IN = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+    document.getElementById('quickViewForm')?.addEventListener('submit', function(e) {
+        if (!IS_USER_LOGGED_IN) {
+            e.preventDefault();
+            showToast('Vui lòng đăng nhập để thêm vào giỏ hoặc mua ngay!', 'warning');
+            setTimeout(() => {
+                window.location.href = 'index.php?controller=Auth&action=login';
+            }, 800);
+        }
+    });
 
     function closeQuickViewModal() {
         const modal = document.getElementById('quickViewModal');

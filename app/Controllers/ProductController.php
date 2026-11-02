@@ -4,16 +4,23 @@ require_once __DIR__ . '/../Models/ProductModel.php';
 
 class ProductController extends BaseController {
     
+    private $productModel;
+
+    public function __construct() {
+        $this->productModel = new ProductModel();
+    }
+    
     // Xem chi tiết 1 sản phẩm
     public function detail() {
-        $id = $_GET['id'] ?? 1;
-        $productModel = new ProductModel();
+        $id = (int)($_GET['id'] ?? 1);
+        if ($id <= 0) {
+            $this->redirect('index.php');
+        }
         
-        $product = $productModel->getProductById($id);
+        $product = $this->productModel->getProductById($id);
 
         if (!$product) {
-            header("Location: index.php");
-            exit;
+            $this->redirect('index.php');
         }
 
         $this->render('product_detail', [
@@ -25,13 +32,12 @@ class ProductController extends BaseController {
     // Tìm kiếm sản phẩm theo từ khóa
     public function search() {
         $keyword = trim($_GET['keyword'] ?? $_GET['q'] ?? '');
-        $productModel = new ProductModel();
         
         if (!empty($keyword)) {
-            $products = $productModel->searchProducts($keyword);
+            $products = $this->productModel->searchProducts($keyword);
             $categoryName = 'Kết quả tìm kiếm: "' . htmlspecialchars($keyword) . '"';
         } else {
-            $products = $productModel->getAllProducts();
+            $products = $this->productModel->getAllProducts();
             $categoryName = 'Tất cả sản phẩm';
         }
 
@@ -46,13 +52,12 @@ class ProductController extends BaseController {
     // Lọc theo danh mục hoặc nhóm sản phẩm
     public function category() {
         $cat = trim($_GET['cat'] ?? $_GET['name'] ?? '');
-        $productModel = new ProductModel();
 
         if (!empty($cat)) {
-            $products = $productModel->getProductsByCategoryOrKeyword($cat);
+            $products = $this->productModel->getProductsByCategoryOrKeyword($cat);
             $categoryName = 'Danh mục: ' . htmlspecialchars($cat);
         } else {
-            $products = $productModel->getAllProducts();
+            $products = $this->productModel->getAllProducts();
             $categoryName = 'Tất cả sản phẩm';
         }
 
@@ -66,8 +71,7 @@ class ProductController extends BaseController {
 
     // Danh sách tất cả sản phẩm
     public function list() {
-        $productModel = new ProductModel();
-        $products = $productModel->getAllProducts();
+        $products = $this->productModel->getAllProducts();
 
         $this->render('product_list', [
             'title' => 'Tất cả sản phẩm - hquie',

@@ -5,22 +5,25 @@ require_once __DIR__ . '/../Models/OrderModel.php';
 
 class ProfileController extends BaseController {
     
+    private $userModel;
+    private $orderModel;
+
+    public function __construct() {
+        $this->userModel = new UserModel();
+        $this->orderModel = new OrderModel();
+    }
+    
     // Giao diện Hồ sơ của tôi (Hiển thị thông tin user và đơn hàng)
     public function index() {
         if (!isset($_SESSION['user_id'])) {
-            header("Location: index.php?controller=Auth&action=login");
-            exit;
+            $this->redirect("index.php?controller=Auth&action=login");
         }
 
-        $userId = $_SESSION['user_id'];
+        $userId = (int)$_SESSION['user_id'];
         
-        // Lấy thông tin User
-        $userModel = new UserModel();
-        $user = $userModel->getUserById($userId);
-
-        // Lấy danh sách đơn hàng
-        $orderModel = new OrderModel();
-        $orders = $orderModel->getOrdersByUserId($userId);
+        // Lấy thông tin User & Danh sách đơn hàng
+        $user = $this->userModel->getUserById($userId);
+        $orders = $this->orderModel->getOrdersByUserId($userId);
 
         $this->render('profile', [
             'title' => 'Tài khoản của tôi',
@@ -32,22 +35,18 @@ class ProfileController extends BaseController {
     // Xử lý cập nhật thông tin Profile
     public function update() {
         if (!isset($_SESSION['user_id'])) {
-            header("Location: index.php?controller=Auth&action=login");
-            exit;
+            $this->redirect("index.php?controller=Auth&action=login");
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $userId = $_SESSION['user_id'];
+            $userId = (int)$_SESSION['user_id'];
             $phone = trim($_POST['phone'] ?? '');
             $address = trim($_POST['address'] ?? '');
 
-            $userModel = new UserModel();
-            $userModel->updateProfile($userId, $phone, $address);
-            
-            // Có thể thêm message success vào Session nếu cần
+            $this->userModel->updateProfile($userId, $phone, $address);
+            $_SESSION['flash_success'] = 'Cập nhật thông tin tài khoản thành công!';
         }
         
-        header("Location: index.php?controller=Profile&action=index");
-        exit;
+        $this->redirect("index.php?controller=Profile&action=index");
     }
 }

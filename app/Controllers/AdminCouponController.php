@@ -8,8 +8,7 @@ class AdminCouponController extends BaseController {
 
     public function __construct() {
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-            header("Location: index.php?controller=Auth&action=login");
-            exit;
+            $this->redirect("index.php?controller=Auth&action=login");
         }
         $this->adminModel = new AdminModel();
     }
@@ -36,8 +35,7 @@ class AdminCouponController extends BaseController {
                 $_SESSION['flash_success'] = 'Tạo mã giảm giá "' . htmlspecialchars($code) . '" thành công!';
             }
         }
-        header("Location: index.php?controller=AdminCoupon&action=index");
-        exit;
+        $this->redirect("index.php?controller=AdminCoupon&action=index");
     }
 
     // GET/POST: Đổi trạng thái Bật/Tắt
@@ -47,8 +45,7 @@ class AdminCouponController extends BaseController {
             $this->adminModel->toggleCouponStatus($id);
             $_SESSION['flash_success'] = 'Cập nhật trạng thái mã giảm giá thành công!';
         }
-        header("Location: index.php?controller=AdminCoupon&action=index");
-        exit;
+        $this->redirect("index.php?controller=AdminCoupon&action=index");
     }
 
     // GET/POST: Xóa mã giảm giá
@@ -58,7 +55,6 @@ class AdminCouponController extends BaseController {
             $this->adminModel->deleteCoupon($id);
             $_SESSION['flash_success'] = 'Đã xóa mã giảm giá thành công!';
         }
-        header("Location: index.php?controller=AdminCoupon&action=index");
-        exit;
+        $this->redirect("index.php?controller=AdminCoupon&action=index");
     }
 }

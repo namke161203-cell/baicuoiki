@@ -14,23 +14,26 @@ require_once __DIR__ . '/partials/header.php';
             <h1 class="text-xl font-bold text-gray-900 uppercase tracking-tight mb-8">Giỏ hàng của bạn [<?= array_sum(array_column($cart, 'quantity')) ?> mặt hàng]</h1>
 
             <?php if (empty($cart)): ?>
-                <div class="text-center py-10 border-t border-gray-100">
-                    <p class="text-gray-500 mb-4">Giỏ hàng trống.</p>
-                    <a href="index.php" class="inline-block bg-primary text-white font-bold px-8 py-3 uppercase tracking-wider">Tiếp tục mua sắm</a>
-                </div>
+                <?php 
+                $title = "Giỏ hàng của bạn đang trống";
+                $description = "Hãy chọn cho mình những bộ trang phục cao cấp và phụ kiện ưng ý từ bộ sưu tập mới nhất!";
+                $btnText = "Khám phá bộ sưu tập ngay";
+                $btnUrl = "index.php";
+                include __DIR__ . '/components/empty_state.php'; 
+                ?>
             <?php else: ?>
             <div class="space-y-6">
                 <?php foreach ($cart as $key => $item): ?>
                 <div class="flex border-b border-gray-100 pb-6">
                     <!-- Hình ảnh -->
                     <div class="w-24 h-32 bg-gray-100 flex-shrink-0 border border-gray-200">
-                        <img src="<?= $item['image'] ?>" class="w-full h-full object-cover">
+                        <img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="w-full h-full object-cover">
                     </div>
                     
                     <!-- Thông tin -->
                     <div class="ml-6 flex-1 flex justify-between">
                         <div>
-                            <h3 class="text-sm font-bold text-gray-900 uppercase mb-2"><?= $item['name'] ?> - <?= number_format($item['price'], 0, ',', '.') ?>đ</h3>
+                            <h3 class="text-sm font-bold text-gray-900 uppercase mb-2"><?= htmlspecialchars($item['name']) ?> - <?= number_format($item['price'], 0, ',', '.') ?>đ</h3>
                             
                             <!-- Chọn Size (Theo design hiển thị S M L) -->
                             <div class="flex space-x-2 mb-4">

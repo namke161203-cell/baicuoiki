@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'hquie Cadra Studio - Executive Dashboard' ?></title>
+    <title><?= $title ?? 'Cadra Studio - Bảng Điều Khiển Quản Trị' ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
@@ -143,21 +143,26 @@ if ($reqController === 'Admin') {
             <!-- Middle: Horizontal Pill Tabs Navigation (Smooth Switcher & Responsive Scroll) -->
             <nav class="flex items-center space-x-1 bg-gray-100/90 p-1.5 rounded-full border border-gray-200/70 shadow-inner overflow-x-auto no-scrollbar max-w-full">
                 <button type="button" onclick="switchCadraTab('dashboard')" id="btn-tab-dashboard" class="cadra-nav-btn <?= $currentActivePill === 'dashboard' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
-                    Dashboard
+                    Tổng quan
                 </button>
                 <button type="button" onclick="switchCadraTab('products')" id="btn-tab-products" class="cadra-nav-btn <?= $currentActivePill === 'products' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
                     Sản phẩm
                 </button>
                 <button type="button" onclick="switchCadraTab('orders')" id="btn-tab-orders" class="cadra-nav-btn <?= $currentActivePill === 'orders' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
                     Đơn hàng
-                    <span class="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-orange-500 text-white">4</span>
+                    <?php 
+                    $pendingBadgeCount = isset($orderStats['count_pending']) ? (int)$orderStats['count_pending'] : 0;
+                    if ($pendingBadgeCount > 0): 
+                    ?>
+                    <span class="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-orange-500 text-white"><?= $pendingBadgeCount ?></span>
+                    <?php endif; ?>
                 </button>
                 <button type="button" onclick="switchCadraTab('customers')" id="btn-tab-customers" class="cadra-nav-btn <?= $currentActivePill === 'customers' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
                     Khách hàng
                 </button>
                 <button type="button" onclick="switchCadraTab('coupons')" id="btn-tab-coupons" class="cadra-nav-btn <?= $currentActivePill === 'coupons' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
                     Mã giảm giá
-                    <span class="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-teal-500 text-white">New</span>
+                    <span class="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-teal-500 text-white">Mới</span>
                 </button>
                 <button type="button" onclick="switchCadraTab('reports')" id="btn-tab-reports" class="cadra-nav-btn <?= $currentActivePill === 'reports' ? 'active' : 'text-gray-600' ?> px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-bold flex items-center cursor-pointer">
                     Báo cáo
@@ -179,21 +184,28 @@ if ($reqController === 'Admin') {
                 </a>
 
                 <!-- Notification Bell -->
-                <button onclick="toggleAdminNotifications()" class="relative p-2 text-gray-500 hover:text-gray-900 transition rounded-full hover:bg-gray-100 focus:outline-none">
+                <button onclick="toggleAdminNotifications()" class="relative p-2 text-gray-500 hover:text-gray-900 transition rounded-full hover:bg-gray-100 focus:outline-none cursor-pointer">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                    <?php if ($pendingBadgeCount > 0): ?>
                     <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-orange-500"></span>
+                    <?php endif; ?>
                 </button>
 
                 <!-- Profile Dropdown -->
+                <?php
+                $adminAvatarName = urlencode($_SESSION['user_name'] ?? 'Admin');
+                $adminDisplayName = htmlspecialchars($_SESSION['user_name'] ?? 'Quản Trị Viên');
+                $adminDisplayEmail = htmlspecialchars($_SESSION['user_email'] ?? 'admin@hquie.studio');
+                ?>
                 <div class="relative">
                     <button onclick="toggleAdminProfileMenu()" class="flex items-center space-x-2 pl-2 focus:outline-none cursor-pointer">
-                        <img src="https://ui-avatars.com/api/?name=Admin+Noor&background=18191b&color=fff&bold=true" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-gray-200">
+                        <img src="https://ui-avatars.com/api/?name=<?= $adminAvatarName ?>&background=18191b&color=fff&bold=true" class="w-8 h-8 rounded-full object-cover shadow-sm ring-2 ring-gray-200" alt="<?= $adminDisplayName ?>">
                     </button>
                     <!-- Profile Menu Dropdown -->
                     <div id="adminProfileMenu" class="hidden absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 text-sm">
                         <div class="px-4 py-2 border-b border-gray-100">
-                            <p class="font-bold text-gray-900">Admin Noor</p>
-                            <p class="text-xs text-gray-400">noor@hquie.studio</p>
+                            <p class="font-bold text-gray-900"><?= $adminDisplayName ?></p>
+                            <p class="text-xs text-gray-400"><?= $adminDisplayEmail ?></p>
                         </div>
                         <a href="index.php?controller=Profile&action=index" class="block px-4 py-2 hover:bg-gray-50 text-gray-700 text-xs font-semibold">Tài khoản quản trị</a>
                         <a href="index.php?controller=Auth&action=logout" class="block px-4 py-2 hover:bg-red-50 text-red-600 text-xs font-semibold">Đăng xuất</a>
@@ -231,7 +243,7 @@ if ($reqController === 'Admin') {
                 targetPane.classList.add('active-tab');
 
                 const tabTitles = {
-                    dashboard: { title: 'Dashboard', breadcrumb: 'Dashboard' },
+                    dashboard: { title: 'Tổng Quan Hệ Thống', breadcrumb: 'Tổng Quan' },
                     products: { title: 'Sản Phẩm', breadcrumb: 'Sản Phẩm & Kho' },
                     orders: { title: 'Đơn Hàng', breadcrumb: 'Quản Lý Đơn Hàng' },
                     customers: { title: 'Khách Hàng', breadcrumb: 'Quản Lý Khách Hàng' },
@@ -240,7 +252,7 @@ if ($reqController === 'Admin') {
                     ads: { title: 'Quảng Cáo', breadcrumb: 'Quảng Cáo & Banner' },
                     settings: { title: 'Cài Đặt', breadcrumb: 'Cài Đặt Hệ Thống' }
                 };
-                const info = tabTitles[tabKey] || { title: 'Dashboard', breadcrumb: 'Dashboard' };
+                const info = tabTitles[tabKey] || { title: 'Tổng Quan Hệ Thống', breadcrumb: 'Tổng Quan' };
                 const pageTitle = document.getElementById('page-current-title');
                 const breadcrumbTitle = document.getElementById('breadcrumb-current-tab');
                 if (pageTitle) pageTitle.innerText = info.title;

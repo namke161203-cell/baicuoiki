@@ -33,60 +33,60 @@ if (isset($_SESSION['cart'])) {
 
     <!-- Top Announcement Bar -->
     <div class="bg-primary text-white text-xs font-semibold text-center py-2 uppercase tracking-wider">
-        FREE SHIPPING ON ORDERS OVER $100 | LIMITED TIME: 15% OFF NEW CUSTOMERS
+        MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN TỪ 500.000Đ | ƯU ĐÃI 15% CHO KHÁCH HÀNG MỚI
     </div>
 
     <!-- Main Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Left: Logo & Nav -->
-                <div class="flex items-center">
-                    <a href="index.php" class="text-3xl font-black text-primary tracking-tighter mr-10 animate-fade-down stagger-2">hquie</a>
+                <div class="flex items-center flex-shrink-0">
+                    <a href="index.php" class="text-3xl font-black text-primary tracking-tighter mr-6 lg:mr-10 animate-fade-down stagger-2 flex-shrink-0">hquie</a>
                     
-                    <!-- Desktop Nav -->
-                    <nav class="hidden md:flex space-x-6 text-sm font-bold text-gray-800 uppercase tracking-wide animate-fade-down stagger-1">
-                        <a href="index.php?controller=Product&action=category&cat=nữ" class="hover:text-primary transition">Phụ nữ</a>
-                        <a href="index.php?controller=Product&action=category&cat=nam" class="hover:text-primary transition">Nam</a>
-                        <a href="index.php?controller=Product&action=list" class="hover:text-primary transition">Hàng mới về</a>
-                        <a href="index.php#shop" class="hover:text-primary transition">Bộ sưu tập</a>
-                        <button onclick="openBrandModal()" class="hover:text-primary transition uppercase font-bold text-sm">Thương hiệu</button>
-                        <button onclick="openSearchModal()" class="hover:text-primary transition flex items-center uppercase font-bold text-sm">
+                    <!-- Desktop Nav with Proper Spacing & No Line Breaking -->
+                    <nav class="hidden md:flex items-center space-x-3.5 lg:space-x-5 xl:space-x-6 text-xs lg:text-[13px] font-bold text-gray-800 uppercase tracking-wider animate-fade-down stagger-1 flex-shrink-0">
+                        <a href="index.php?controller=Product&action=category&cat=nữ" class="hover:text-primary transition whitespace-nowrap">Phụ nữ</a>
+                        <a href="index.php?controller=Product&action=category&cat=nam" class="hover:text-primary transition whitespace-nowrap">Nam</a>
+                        <a href="index.php?controller=Product&action=list" class="hover:text-primary transition whitespace-nowrap">Hàng mới về</a>
+                        <a href="index.php#shop" class="hover:text-primary transition whitespace-nowrap">Bộ sưu tập</a>
+                        <button onclick="openBrandModal()" class="hover:text-primary transition uppercase font-bold text-xs lg:text-[13px] whitespace-nowrap">Thương hiệu</button>
+                        <button onclick="openSearchModal()" class="hover:text-primary transition flex items-center uppercase font-bold text-xs lg:text-[13px] whitespace-nowrap">
                             <svg class="w-4 h-4 mr-1 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             Tìm kiếm
                         </button>
                     </nav>
                 </div>
                 
-                <!-- Right: Icons -->
-                <div class="flex items-center space-x-6 text-sm font-bold text-gray-800 uppercase animate-fade-down stagger-3">
+                <!-- Right: Icons & Actions with Stable Spacing -->
+                <div class="flex items-center space-x-3 lg:space-x-5 xl:space-x-6 text-xs lg:text-[13px] font-bold text-gray-800 uppercase tracking-wider animate-fade-down stagger-3 flex-shrink-0">
                     <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                    <a href="index.php?controller=Admin&action=index" class="hover:text-primary transition flex items-center text-red-500">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        Admin Panel
+                    <a href="index.php?controller=Admin&action=index" class="hover:text-primary transition flex items-center text-red-500 whitespace-nowrap font-bold">
+                        <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="whitespace-nowrap">Quản Trị Hệ Thống</span>
                     </a>
                     <?php endif; ?>
                     
                     <?php if(isset($_SESSION['user_id'])): ?>
-                    <a href="index.php?controller=Profile&action=index" class="hover:text-primary transition flex items-center text-primary">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        <?= htmlspecialchars($_SESSION['user_name']) ?>
+                    <a href="index.php?controller=Profile&action=index" class="hover:text-primary transition flex items-center text-primary whitespace-nowrap">
+                        <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span class="whitespace-nowrap"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                     </a>
                     <?php else: ?>
-                    <a href="index.php?controller=Auth&action=login" class="hover:text-primary transition flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        Tài khoản
+                    <a href="index.php?controller=Auth&action=login" class="hover:text-primary transition flex items-center whitespace-nowrap">
+                        <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <span class="whitespace-nowrap">Tài khoản</span>
                     </a>
                     <?php endif; ?>
 
-                    <button onclick="openWishlistModal()" class="hover:text-primary transition flex items-center uppercase font-bold text-sm">
-                        <svg class="w-4 h-4 mr-1 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        Yêu thích [<span id="wishlist-count">0</span>]
+                    <button onclick="openWishlistModal()" class="hover:text-primary transition flex items-center uppercase font-bold text-xs lg:text-[13px] whitespace-nowrap">
+                        <svg class="w-4 h-4 mr-1 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <span class="whitespace-nowrap">Yêu thích [<span id="wishlist-count">0</span>]</span>
                     </button>
 
-                    <a href="index.php?controller=Cart&action=index" class="hover:text-primary transition flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        Giỏ hàng [<span id="cart-count"><?= $cartTotalItems ?></span>]
+                    <a href="index.php?controller=Cart&action=index" class="hover:text-primary transition flex items-center whitespace-nowrap">
+                        <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="whitespace-nowrap">Giỏ hàng [<span id="cart-count"><?= $cartTotalItems ?></span>]</span>
                     </a>
                 </div>
             </div>
@@ -321,23 +321,124 @@ if (isset($_SESSION['cart'])) {
             container.innerHTML = html;
         }
 
-        // Đơn giản Toast Notification
-        function showToast(msg) {
-            let toast = document.getElementById('globalToast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'globalToast';
-                toast.className = 'fixed bottom-5 right-5 z-50 bg-gray-900 text-white px-5 py-3 rounded-lg shadow-2xl text-sm font-medium transition-opacity duration-300 pointer-events-none opacity-0';
-                document.body.appendChild(toast);
+        // Hệ Thống Toast Notification Chuẩn Design System (Ocean Blue, Error, Info)
+        function showToast(msg, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.className = 'fixed bottom-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none';
+                document.body.appendChild(toastContainer);
             }
-            toast.innerText = msg;
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
+
+            const toast = document.createElement('div');
+            let iconSvg = '';
+            let styleClasses = '';
+
+            if (type === 'success') {
+                styleClasses = 'bg-[#0284c7] text-white shadow-xl shadow-sky-900/20 border border-sky-400/30';
+                iconSvg = `<svg class="w-5 h-5 text-sky-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            } else if (type === 'error') {
+                styleClasses = 'bg-rose-600 text-white shadow-xl shadow-red-900/20 border border-rose-400/30';
+                iconSvg = `<svg class="w-5 h-5 text-rose-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            } else {
+                styleClasses = 'bg-gray-900 text-white shadow-xl border border-gray-700';
+                iconSvg = `<svg class="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+
+            toast.className = `flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 transform translate-y-3 opacity-0 pointer-events-auto ${styleClasses}`;
+            toast.innerHTML = `${iconSvg}<span>${msg}</span>`;
+
+            toastContainer.appendChild(toast);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-3', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+
+            // Animate out
             setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-            }, 3000);
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-3', 'opacity-0');
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 300);
+            }, 3500);
         }
+
+        /**
+         * API INTEGRATION SKILL: Xử lý giỏ hàng qua AJAX (Loading, Error, Success)
+         */
+        window.addToCartAjax = async function(productId, color, size, quantity = 1, btnEl = null) {
+            let originalHtml = '';
+            
+            // 1. Loading State
+            if (btnEl) {
+                originalHtml = btnEl.innerHTML;
+                btnEl.disabled = true;
+                btnEl.classList.add('opacity-75', 'cursor-not-allowed');
+                btnEl.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg> Đang thêm...`;
+            }
+
+            try {
+                const response = await fetch('index.php?controller=Cart&action=ajaxAdd', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        product_id: parseInt(productId),
+                        color: color || 'Không chỉ định',
+                        size: size || 'Free',
+                        quantity: parseInt(quantity) || 1
+                    })
+                });
+
+                const data = await response.json();
+
+                // Kiểm tra yêu cầu Đăng nhập từ Server
+                if (data.require_login || response.status === 401) {
+                    showToast(data.message || 'Vui lòng đăng nhập để tiếp tục!', 'warning');
+                    setTimeout(() => {
+                        window.location.href = data.redirect || 'index.php?controller=Auth&action=login';
+                    }, 800);
+                    return;
+                }
+
+                if (response.ok && data.success) {
+                    // 2. Success State
+                    const cartCountEl = document.getElementById('cart-count');
+                    if (cartCountEl) {
+                        cartCountEl.innerText = data.total_items;
+                        // Bounce animation & highlight
+                        cartCountEl.classList.add('scale-150', 'text-sky-300', 'transition-transform', 'duration-300');
+                        setTimeout(() => {
+                            cartCountEl.classList.remove('scale-150', 'text-sky-300');
+                        }, 400);
+                    }
+                    showToast(data.message || 'Đã thêm vào giỏ hàng thành công!', 'success');
+                } else {
+                    // 3. Error State (Server phản hồi lỗi nghiệp vụ / hết hàng)
+                    showToast(data.message || 'Không thể thêm sản phẩm vào giỏ!', 'error');
+                }
+            } catch (err) {
+                // 3. Error State (Lỗi mất kết nối mạng hoặc lỗi cú pháp)
+                console.error('Lỗi khi gọi API Cart:', err);
+                showToast('Không thể kết nối máy chủ! Vui lòng thử lại sau.', 'error');
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.classList.remove('opacity-75', 'cursor-not-allowed');
+                    btnEl.innerHTML = originalHtml;
+                }
+            }
+        };
 
         // Chạy khi tải trang
         document.addEventListener('DOMContentLoaded', updateWishlistCount);

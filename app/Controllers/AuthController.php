@@ -21,10 +21,21 @@ class AuthController extends BaseController {
             $user = $userModel->login($email, $password);
 
             if ($user) {
+                // Bảo mật OWASP: Tái tạo ID phiên để phòng chống tấn công Session Fixation
+                session_regenerate_id(true);
+
                 // Đăng nhập thành công -> Lưu session
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_name'] = $user['name'];
                 $_SESSION['user_role'] = $user['role']; // 'admin' hoặc 'customer'
+
+                // Nếu có yêu cầu chuyển hướng trước đó (ví dụ từ Mua ngay hoặc Thêm giỏ hàng)
+                if (isset($_SESSION['redirect_after_login'])) {
+                    $redirectUrl = $_SESSION['redirect_after_login'];
+                    unset($_SESSION['redirect_after_login']);
+                    header("Location: " . $redirectUrl);
+                    exit;
+                }
 
                 // Điều hướng theo Role
                 if ($user['role'] === 'admin') {
@@ -56,14 +67,15 @@ class AuthController extends BaseController {
             
             if (empty($name) || empty($email) || empty($password)) {
                 $error = 'Vui lòng điền đầy đủ thông tin';
-            } elseif (!str_contains($password, '@')) {
-                $error = 'Mật khẩu không hợp lệ: Bắt buộc phải chứa ký tự "@"!';
+            } elseif (strlen($password) < 6 || !str_contains($password, '@')) {
+                $error = 'Mật khẩu không hợp lệ: Bắt buộc tối thiểu 6 ký tự và phải chứa ký tự "@"!';
             } else {
                 $userModel = new UserModel();
                 if ($userModel->register($name, $email, $password)) {
                     // Tự động đăng nhập luôn
                     $user = $userModel->login($email, $password);
                     if ($user) {
+                        session_regenerate_id(true);
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['user_name'] = $user['name'];
                         $_SESSION['user_role'] = $user['role'];
@@ -80,10 +92,16 @@ class AuthController extends BaseController {
 
     // Đăng xuất
     public function logout() {
-        // Xóa thông tin đăng nhập trong Session
-        unset($_SESSION['user_id']);
-        unset($_SESSION['user_name']);
-        unset($_SESSION['user_role']);
+        // Xóa hoàn toàn phiên làm việc theo chuẩn bảo mật
+        $_SESSION = [];
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+        session_destroy();
         
         header("Location: index.php?controller=Auth&action=login");
         exit;

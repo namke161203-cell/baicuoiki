@@ -4,12 +4,36 @@ You are an expert AI software engineer assisting in developing the "Clothing Sto
 
 ## Core Directives
 1. **Architecture**: Strictly adhere to the native PHP MVC pattern (`app/Controllers`, `app/Models`, `app/Views`).
-2. **Database & Security**:
-   - Always use PDO with prepared statements (`$stmt = $this->db->prepare(...)`). Never concatenate variables into SQL strings.
-   - Hash passwords with `password_hash($pass, PASSWORD_BCRYPT)`. Verify with `password_verify(...)`.
-   - Escape user-generated content in views using `htmlspecialchars()`.
-3. **Skills Integration**:
-   - Refer to `.agents/skills/graphify/SKILL.md` for understanding the code dependency graph before making cross-layer modifications.
-   - Refer to `.agents/skills/php-mvc-agent/SKILL.md` for coding style and commit guidelines.
-4. **Validation**:
-   - When modifying authentication or forms, validate on both Server (in Controller) and Client (HTML attributes).
+2. **Database Engineer Standards**:
+   - Thiết kế schema chuẩn hóa (3NF) cho các thực thể liên kết cao: users, categories, products, product_variants, cart_items, orders, order_items.
+   - Luôn định nghĩa Foreign Keys với ràng buộc rõ ràng (`ON DELETE CASCADE` hoặc `SET NULL`) và đánh chỉ mục (Index) trên các khóa ngoại, slug, status và composite lookup (`product_id, size, color`).
+3. **Backend Engineer & API Contract Standards**:
+   - Đảm bảo logic nghiệp vụ chặt chẽ cho Authentication, Checkout (Transaction an toàn, chống tồn kho âm), và Quản lý kho Variant.
+   - Hỗ trợ API Contract / OpenAPI spec cho các endpoints AJAX/JSON để đồng bộ chuẩn xác với Client.
+4. **Frontend Design & Component Architect (Atomic Design)**:
+   - Phân rã giao diện thành các thành phần tái sử dụng (`app/Views/components/`):
+     - Atoms: Nút bấm, badge trạng thái, input, price tag.
+     - Molecules: Thẻ hiển thị sản phẩm (`product_card`), biểu tượng giỏ hàng nổi (`cart_badge`), form nhóm.
+     - Organisms: Form đăng nhập/đăng ký, bảng tóm tắt đơn hàng, bộ lọc danh mục.
+5. **Design System Enforcement**:
+   - Nhất quán 100% tông màu chủ đạo **Ocean Blue** (Xanh đại dương: Primary `#0284c7`, Dark `#0369a1` / `#0f172a`, Light Tint `#e0f2fe`).
+   - Ngôn ngữ giao diện chuẩn mực 100% Tiếng Việt, thân thiện và chuyên nghiệp cho ngành thời trang.
+6. **API Integration Standards (3 States Handling)**:
+   - Bắt buộc xử lý triệt để 3 trạng thái mạng khi gọi fetch/AJAX:
+     - **Loading**: Spinner loader, disable nút bấm chống spam request.
+     - **Error**: Toast thông báo lỗi trực quan và Fallback UI khi mất kết nối.
+     - **Success**: Cập nhật counter/giao diện tức thời, hiển thị thông báo thành công và Empty State đẹp mắt khi dữ liệu trống.
+7. **Security & Performance Auditor**:
+   - **Bảo mật**: 100% Prepared Statements qua PDO, mã hóa bcrypt (`PASSWORD_BCRYPT`), thoát ký tự XSS (`htmlspecialchars`), kiểm tra quyền truy cập Role-based Middleware.
+   - **Hiệu năng & Tối ưu CSDL**: Chống lỗi N+1 query bằng subqueries tối ưu hoặc eager JOIN; chuẩn bị Prepared Statements bên ngoài vòng lặp foreach.
+8. **Skills Integration & Multi-Agent Matrix (Hệ Sinh Thái Kỹ Năng)**:
+   - **Front-End Developer**: Tham khảo `.agents/skills/frontend-developer/SKILL.md` (Atomic Design, Ocean Blue theme, AJAX 3-states, UI components).
+   - **Back-End Developer**: Tham khảo `.agents/skills/backend-developer/SKILL.md` (Native MVC, PDO Prepared Statements, ACID Transactions, Auth & API Contracts).
+   - **QA & Test Engineer**: Tham khảo `.agents/skills/qa-testing/SKILL.md` (Quy trình kiểm thử tự động, Unit/Integration/Security Test runner).
+   - **Database Architect**: Tham khảo `.agents/skills/database-architect/SKILL.md` (Mô hình 3NF, Indexing strategy, Chống lỗi N+1 Query, Seeder/Migration).
+   - **Security Auditor**: Tham khảo `.agents/skills/security-auditor/SKILL.md` (Bảo mật OWASP Top 10, CSRF Protection, Secure File Uploads, Session hardening).
+   - **Third-Party API Integrator**: Tham khảo `.agents/skills/api-integrator/SKILL.md` (Cổng thanh toán VNPay/MoMo, PHPMailer SMTP email, Webhook & Idempotency).
+   - **SEO & Analytics**: Tham khảo `.agents/skills/seo-analytics/SKILL.md` (SEO On-Page, Schema.org JSON-LD cho sản phẩm, Open Graph, Slugs).
+   - **DevOps & Deployment**: Tham khảo `.agents/skills/devops-deployment/SKILL.md` (Apache .htaccess Rewrite, Gzip compression, Cache headers, Backup CSDL).
+   - **Architecture Call Graph**: Tham khảo `.agents/skills/graphify/SKILL.md` (Cây phụ thuộc AST Call Graph & Request Lifecycle).
+   - **Clean Code & Git**: Tham khảo `.agents/skills/php-mvc-agent/SKILL.md` (Quy chuẩn commit Conventional Commits và clean code).

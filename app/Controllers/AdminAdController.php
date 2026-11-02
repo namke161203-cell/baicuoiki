@@ -8,8 +8,7 @@ class AdminAdController extends BaseController {
 
     public function __construct() {
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-            header("Location: index.php?controller=Auth&action=login");
-            exit;
+            $this->redirect("index.php?controller=Auth&action=login");
         }
         $this->adminModel = new AdminModel();
     }
@@ -36,8 +35,7 @@ class AdminAdController extends BaseController {
                 $_SESSION['flash_success'] = 'Thêm banner quảng cáo "' . htmlspecialchars($title) . '" thành công!';
             }
         }
-        header("Location: index.php?controller=AdminAd&action=index");
-        exit;
+        $this->redirect("index.php?controller=AdminAd&action=index");
     }
 
     // GET/POST: Đổi trạng thái Bật/Tắt banner
@@ -47,8 +45,7 @@ class AdminAdController extends BaseController {
             $this->adminModel->toggleAdStatus($id);
             $_SESSION['flash_success'] = 'Cập nhật trạng thái hiển thị banner thành công!';
         }
-        header("Location: index.php?controller=AdminAd&action=index");
-        exit;
+        $this->redirect("index.php?controller=AdminAd&action=index");
     }
 
     // GET/POST: Xóa banner
@@ -58,7 +55,6 @@ class AdminAdController extends BaseController {
             $this->adminModel->deleteAd($id);
             $_SESSION['flash_success'] = 'Đã xóa banner quảng cáo thành công!';
         }
-        header("Location: index.php?controller=AdminAd&action=index");
-        exit;
+        $this->redirect("index.php?controller=AdminAd&action=index");
     }
 }

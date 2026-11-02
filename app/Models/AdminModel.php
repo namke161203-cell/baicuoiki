@@ -62,7 +62,113 @@ class AdminModel extends BaseModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // ==========================================
+    /**
+     * Thống kê toàn diện thời gian thực cho Executive Dashboard (Cadra Larkspur Style)
+     */
+    public function getExecutiveDashboardStats() {
+        // 1. Tổng tiền mặt / doanh thu tích lũy (không tính đơn hủy)
+        $stmtTotal = $this->db->query("SELECT COALESCE(SUM(total_amount), 0) as total_cash, COUNT(*) as total_orders FROM orders WHERE status != 'cancelled'");
+        $totalRow = $stmtTotal->fetch(PDO::FETCH_ASSOC);
+        $totalCash = (float)($totalRow['total_cash'] ?? 0);
+        $totalOrders = (int)($totalRow['total_orders'] ?? 0);
+
+        // 2. Doanh thu và số đơn trong tháng hiện tại
+        $stmtMonth = $this->db->query("
+            SELECT COALESCE(SUM(total_amount), 0) as month_revenue, COUNT(*) as month_orders 
+            FROM orders 
+            WHERE MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE()) AND status != 'cancelled'
+        ");
+        $monthRow = $stmtMonth->fetch(PDO::FETCH_ASSOC);
+        $monthRevenue = (float)($monthRow['month_revenue'] ?? 0);
+        $monthOrders = (int)($monthRow['month_orders'] ?? 0);
+
+        // 3. Doanh thu 14 ngày gần nhất
+        $stmt14d = $this->db->query("
+            SELECT COALESCE(SUM(total_amount), 0) as revenue_14d, COUNT(*) as orders_14d 
+            FROM orders 
+            WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 14 DAY) AND status != 'cancelled'
+        ");
+        $row14d = $stmt14d->fetch(PDO::FETCH_ASSOC);
+        $revenue14d = (float)($row14d['revenue_14d'] ?? 0);
+
+        // 4. Số đơn hoàn thành (Completed)
+        $stmtComp = $this->db->query("SELECT COUNT(*) as completed_count FROM orders WHERE status = 'completed'");
+        $completedCount = (int)$stmtComp->fetchColumn();
+
+        // 5. Đơn hàng đang mở (Open Order Book: Pending + Processing)
+        $stmtOpen = $this->db->query("
+            SELECT COUNT(*) as open_count, COALESCE(SUM(total_amount), 0) as open_total 
+            FROM orders 
+            WHERE status IN ('pending', 'processing')
+        ");
+        $openRow = $stmtOpen->fetch(PDO::FETCH_ASSOC);
+        $openCount = (int)($openRow['open_count'] ?? 0);
+        $openTotal = (float)($openRow['open_total'] ?? 0);
+
+        // 6. Tỉ lệ hoàn thành / đúng hạn (On-time Delivery / Completion rate)
+        $nonCancelledTotal = max(1, $totalOrders);
+        $completionRate = $totalOrders > 0 ? round(($completedCount / $nonCancelledTotal) * 100) : 100;
+
+        // 7. Chi tiết các giai đoạn bán hàng (Sales Funnel: Pending, Processing, Shipped, Completed)
+        $stmtFunnel = $this->db->query("
+            SELECT status, COUNT(*) as count, COALESCE(SUM(total_amount), 0) as total 
+            FROM orders 
+            GROUP BY status
+        ");
+        $funnelRows = $stmtFunnel->fetchAll(PDO::FETCH_ASSOC);
+        $funnel = [
+            'pending' => ['count' => 0, 'total' => 0],
+            'processing' => ['count' => 0, 'total' => 0],
+            'shipped' => ['count' => 0, 'total' => 0],
+            'completed' => ['count' => 0, 'total' => 0],
+            'cancelled' => ['count' => 0, 'total' => 0]
+        ];
+        foreach ($funnelRows as $f) {
+            $st = strtolower($f['status']);
+            if (isset($funnel[$st])) {
+                $funnel[$st]['count'] = (int)$f['count'];
+                $funnel[$st]['total'] = (float)$f['total'];
+            }
+        }
+
+        // 8. Doanh thu theo tháng (Year at a glance)
+        $stmtMonthly = $this->db->query("
+            SELECT DATE_FORMAT(created_at, '%m/%Y') as label, DATE_FORMAT(created_at, '%Y-%m') as ym, 
+                   COALESCE(SUM(total_amount), 0) as revenue, COUNT(*) as count
+            FROM orders 
+            WHERE status != 'cancelled'
+            GROUP BY ym 
+            ORDER BY ym ASC 
+            LIMIT 6
+        ");
+        $monthlyRevenue = $stmtMonthly->fetchAll(PDO::FETCH_ASSOC);
+
+        // 9. Dòng tiền gần đây (Recent Cashflow / Daily totals for mini waterfall chart)
+        $stmtCash = $this->db->query("
+            SELECT DATE(created_at) as date, COALESCE(SUM(total_amount), 0) as amount 
+            FROM orders 
+            WHERE status != 'cancelled' 
+            GROUP BY date 
+            ORDER BY date DESC 
+            LIMIT 9
+        ");
+        $cashflow = $stmtCash->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'total_cash' => $totalCash,
+            'total_orders' => $totalOrders,
+            'month_revenue' => $monthRevenue,
+            'month_orders' => $monthOrders,
+            'revenue_14d' => $revenue14d,
+            'completed_count' => $completedCount,
+            'open_count' => $openCount,
+            'open_total' => $openTotal,
+            'completion_rate' => $completionRate,
+            'funnel' => $funnel,
+            'monthly_revenue' => $monthlyRevenue,
+            'cashflow' => $cashflow
+        ];
+    }
     // PHẦN 1: MÃ GIẢM GIÁ (COUPONS)
     // ==========================================
     public function getAllCoupons() {

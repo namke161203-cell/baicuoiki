@@ -83,14 +83,13 @@ require_once __DIR__ . '/partials/header.php';
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="bg-white p-12 text-center rounded-lg shadow-sm border border-gray-200 my-8">
-                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h3 class="text-lg font-bold text-gray-800 mb-2">Chưa tìm thấy sản phẩm nào!</h3>
-                <p class="text-sm text-gray-500 mb-6">Hãy thử tìm với từ khóa khác như "Áo khoác", "Áo len", "Mùa đông" hoặc khám phá toàn bộ bộ sưu tập.</p>
-                <a href="index.php" class="inline-block bg-primary text-white font-bold px-6 py-2.5 rounded text-sm uppercase tracking-wider hover:bg-primary-dark transition">
-                    ← Trở về Trang chủ
-                </a>
-            </div>
+            <?php 
+            $title = "Chưa tìm thấy sản phẩm nào phù hợp";
+            $description = "Hãy thử tìm với từ khóa khác như \"Áo khoác\", \"Áo len\", \"Mùa đông\" hoặc khám phá toàn bộ bộ sưu tập thời trang mới nhất.";
+            $btnText = "Khám phá trang chủ";
+            $btnUrl = "index.php";
+            include __DIR__ . '/components/empty_state.php'; 
+            ?>
         <?php endif; ?>
 
     </div>

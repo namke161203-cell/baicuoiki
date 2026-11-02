@@ -41,6 +41,14 @@
             <a href="index.php?controller=Auth&action=register" class="flex-1 py-3 text-center text-xs font-bold <?= ($is_register ?? false) ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600' ?> uppercase tracking-wider transition">Tạo tài khoản</a>
         </div>
 
+        <?php if (!empty($_SESSION['auth_message'])): ?>
+            <div class="bg-amber-50 text-amber-800 text-xs p-3 mb-4 border border-amber-200 text-center font-medium rounded flex items-center justify-center gap-1.5 shadow-sm">
+                <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span><?= htmlspecialchars($_SESSION['auth_message']) ?></span>
+            </div>
+            <?php unset($_SESSION['auth_message']); ?>
+        <?php endif; ?>
+
         <?php if (!empty($error)): ?>
             <div class="bg-red-50 text-red-500 text-xs p-3 mb-4 border border-red-100 text-center font-medium">
                 <?= htmlspecialchars($error) ?>

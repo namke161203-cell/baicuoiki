@@ -77,25 +77,144 @@ class ProductModel extends BaseModel {
     }
 
     /**
-     * Lấy danh sách toàn bộ sản phẩm (kèm ảnh bìa) cho Admin
+     * Lấy danh sách toàn bộ sản phẩm (kèm ảnh bìa, tồn kho, số lượng bán, biến thể chi tiết) cho Admin
      */
     public function getAllProducts() {
         $sql = "SELECT p.*, c.name as category_name, 
                        (SELECT image_url FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image,
-                       (SELECT GROUP_CONCAT(CONCAT(color, ' - ', size, ' (', stock, ')') SEPARATOR ', ') FROM product_variants WHERE product_id = p.id) as variants_info
+                       (SELECT GROUP_CONCAT(CONCAT(color, ' - ', size, ' (', stock, ')') SEPARATOR ', ') FROM product_variants WHERE product_id = p.id) as variants_info,
+                       COALESCE((SELECT SUM(stock) FROM product_variants WHERE product_id = p.id), 0) as total_stock,
+                       COALESCE((SELECT COUNT(*) FROM product_variants WHERE product_id = p.id), 0) as variants_count,
+                       COALESCE((SELECT SUM(oi.quantity) FROM order_items oi JOIN orders o ON oi.order_id = o.id WHERE oi.product_id = p.id AND o.status != 'cancelled'), 0) as total_sold
                 FROM products p
                 LEFT JOIN categories c ON p.category_id = c.id
                 ORDER BY p.created_at DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // TỐI ƯU HIỆU NĂNG (Chống lỗi N+1 Query): Gom tất cả ID sản phẩm và truy vấn biến thể chỉ trong 1 câu lệnh duy nhất
+        if (!empty($products)) {
+            $productIds = array_column($products, 'id');
+            $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+            $sqlVariants = "SELECT id, product_id, size, color, stock FROM product_variants WHERE product_id IN ($placeholders) ORDER BY id ASC";
+            $stmtVar = $this->db->prepare($sqlVariants);
+            $stmtVar->execute($productIds);
+            $allVariants = $stmtVar->fetchAll(PDO::FETCH_ASSOC);
+
+            // Gom nhóm biến thể theo product_id trong bộ nhớ PHP
+            $variantsByProduct = [];
+            foreach ($allVariants as $variant) {
+                $variantsByProduct[$variant['product_id']][] = [
+                    'id' => $variant['id'],
+                    'size' => $variant['size'],
+                    'color' => $variant['color'],
+                    'stock' => $variant['stock']
+                ];
+            }
+
+            foreach ($products as &$prod) {
+                $prod['variants_list'] = $variantsByProduct[$prod['id']] ?? [];
+            }
+            unset($prod);
+        }
+
+        return $products;
     }
-    
+
     /**
-     * Xóa sản phẩm
+     * Lấy chỉ số KPI sản phẩm cho Admin (Được tối ưu hóa Subquery chính xác)
+     */
+    public function getProductKPIs() {
+        $totalProducts = (int)$this->db->query("SELECT COUNT(*) FROM products")->fetchColumn();
+        $featuredProducts = (int)$this->db->query("SELECT COUNT(*) FROM products WHERE is_featured = 1")->fetchColumn();
+        
+        // Tồn kho thấp (dưới 10 chiếc) - Tối ưu truy vấn đếm chính xác qua subquery
+        $lowStock = (int)$this->db->query("
+            SELECT COUNT(*) FROM (
+                SELECT p.id FROM products p
+                LEFT JOIN product_variants pv ON p.id = pv.product_id
+                GROUP BY p.id
+                HAVING COALESCE(SUM(pv.stock), 0) > 0 AND COALESCE(SUM(pv.stock), 0) <= 10
+            ) as tbl_low_stock
+        ")->fetchColumn();
+
+        // Hết hàng hoàn toàn (0 chiếc hoặc chưa nhập biến thể)
+        $outOfStock = (int)$this->db->query("
+            SELECT COUNT(*) FROM (
+                SELECT p.id FROM products p
+                LEFT JOIN product_variants pv ON p.id = pv.product_id
+                GROUP BY p.id
+                HAVING COALESCE(SUM(pv.stock), 0) = 0
+            ) as tbl_out_of_stock
+        ")->fetchColumn();
+
+        // Tổng giá trị hàng tồn kho (Giá bán * Tồn kho)
+        $inventoryValue = (float)$this->db->query("
+            SELECT COALESCE(SUM(p.price * pv.stock), 0)
+            FROM products p
+            JOIN product_variants pv ON p.id = pv.product_id
+        ")->fetchColumn();
+
+        return [
+            'total_products' => $totalProducts,
+            'featured_products' => $featuredProducts,
+            'low_stock' => $lowStock,
+            'out_of_stock' => $outOfStock,
+            'inventory_value' => $inventoryValue
+        ];
+    }
+
+    /**
+     * Cập nhật nhanh thông tin sản phẩm (Quick Edit)
+     */
+    public function updateProductQuick($id, $data) {
+        $sql = "UPDATE products 
+                SET name = :name, 
+                    category_id = :category_id, 
+                    price = :price, 
+                    is_featured = :is_featured,
+                    description = :description,
+                    updated_at = NOW()
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':name' => trim($data['name']),
+            ':category_id' => !empty($data['category_id']) ? $data['category_id'] : null,
+            ':price' => (float)$data['price'],
+            ':is_featured' => !empty($data['is_featured']) ? 1 : 0,
+            ':description' => trim($data['description'] ?? ''),
+            ':id' => $id
+        ]);
+    }
+
+    /**
+     * Đổi trạng thái Nổi bật (Toggle Featured) 1 Click
+     */
+    public function toggleFeatured($id) {
+        $stmt = $this->db->prepare("UPDATE products SET is_featured = NOT is_featured, updated_at = NOW() WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        
+        $stmtStatus = $this->db->prepare("SELECT is_featured FROM products WHERE id = :id");
+        $stmtStatus->execute([':id' => $id]);
+        return (int)$stmtStatus->fetchColumn();
+    }
+
+    /**
+     * Cập nhật số lượng tồn kho biến thể
+     */
+    public function updateVariantStock($variantId, $stock) {
+        $stmt = $this->db->prepare("UPDATE product_variants SET stock = :stock, updated_at = NOW() WHERE id = :id");
+        return $stmt->execute([
+            ':stock' => max(0, (int)$stock),
+            ':id' => $variantId
+        ]);
+    }
+
+    /**
+     * Xóa sản phẩm an toàn
      */
     public function deleteProduct($id) {
-        // Xóa sản phẩm sẽ tự động xóa product_images và product_variants nếu dùng ON DELETE CASCADE trong SQL
         $stmt = $this->db->prepare("DELETE FROM products WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }

@@ -51,10 +51,13 @@ require_once __DIR__ . '/partials/header.php';
                 <h2 class="text-xl font-bold text-gray-900 uppercase tracking-tight mb-6">Lịch sử đơn hàng</h2>
 
                 <?php if (empty($orders)): ?>
-                    <div class="text-center py-12 bg-gray-50 border border-gray-100">
-                        <p class="text-gray-500 mb-4">Bạn chưa có đơn hàng nào.</p>
-                        <a href="index.php" class="inline-block bg-primary text-white font-bold px-6 py-3 uppercase tracking-wider text-sm hover:bg-primary-dark transition">Mua sắm ngay</a>
-                    </div>
+                    <?php 
+                    $title = "Bạn chưa có đơn hàng nào";
+                    $description = "Hãy chọn cho mình những bộ trang phục thời thượng từ bộ sưu tập cao cấp của chúng tôi!";
+                    $btnText = "Khám phá sản phẩm ngay";
+                    $btnUrl = "index.php";
+                    include __DIR__ . '/components/empty_state.php'; 
+                    ?>
                 <?php else: ?>
                     <div class="space-y-6">
                         <?php foreach ($orders as $order): ?>
@@ -86,16 +89,15 @@ require_once __DIR__ . '/partials/header.php';
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center">
                                                 <div class="w-12 h-16 bg-gray-100 flex-shrink-0 border border-gray-200 flex items-center justify-center text-xs text-gray-400">
-                                                    <!-- Mockup img icon if real image is not joined -->
                                                     Img
                                                 </div>
                                                 <div class="ml-4">
-                                                    <p class="text-sm font-bold text-gray-900 uppercase truncate max-w-[200px] sm:max-w-md"><?= $item['product_name'] ?? 'Sản phẩm đã xóa' ?></p>
-                                                    <p class="text-xs text-gray-500 mt-1">Size: <?= $item['size'] ?? 'Free' ?> | Màu: <?= $item['color'] ?? 'N/A' ?></p>
+                                                    <p class="text-sm font-bold text-gray-900 uppercase truncate max-w-[200px] sm:max-w-md"><?= htmlspecialchars($item['product_name'] ?? 'Sản phẩm đã xóa') ?></p>
+                                                    <p class="text-xs text-gray-500 mt-1">Size: <?= htmlspecialchars($item['size'] ?? 'Free') ?> | Màu: <?= htmlspecialchars($item['color'] ?? 'N/A') ?></p>
                                                 </div>
                                             </div>
                                             <div class="text-right text-sm">
-                                                <span class="text-gray-500">x<?= $item['quantity'] ?></span>
+                                                <span class="text-gray-500">x<?= (int)$item['quantity'] ?></span>
                                                 <span class="ml-4 font-bold text-gray-900"><?= number_format($item['price'], 0, ',', '.') ?>đ</span>
                                             </div>
                                         </div>

@@ -13,6 +13,15 @@ require_once __DIR__ . '/partials/header.php';
             <div class="bg-white shadow-xl p-8 lg:p-10">
                 <h1 class="text-xl font-bold text-gray-900 uppercase tracking-tight mb-8">Thanh toán - Bước 1: Thông tin giao hàng</h1>
 
+                <?php if (!empty($error)): ?>
+                <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex items-center justify-between text-red-800 animate-pulse">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                        <span class="text-sm font-semibold"><?= htmlspecialchars($error) ?></span>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 border-b border-gray-200 pb-10 mb-10">
                     <!-- Step 1: Form Giao Hàng -->
                     <div class="space-y-4">
@@ -104,16 +113,32 @@ require_once __DIR__ . '/partials/header.php';
                         </div>
                         
                         <div class="mt-6">
-                            <h2 class="text-sm font-bold text-gray-900 mb-4 uppercase">Phương thức giao hàng</h2>
-                            <div class="flex space-x-4">
-                                <label class="flex items-center cursor-pointer border border-primary bg-[#eaf4f6] px-4 py-3 w-1/2">
-                                    <input type="radio" name="shipping" value="nhanh" class="peer" checked>
-                                    <span class="ml-2 text-sm font-bold text-primary">Nhanh</span>
+                            <h2 class="text-sm font-bold text-gray-900 mb-3 uppercase flex items-center justify-between">
+                                <span>Phương thức giao hàng</span>
+                                <span class="text-xs text-primary font-normal">Chọn gói cước phù hợp</span>
+                            </h2>
+                            <div class="space-y-3" id="shippingOptionsContainer">
+                                <?php 
+                                $rates = $shippingRates ?? [
+                                    'tieuchuan' => ['id' => 'tieuchuan', 'name' => 'Giao hàng Tiêu chuẩn', 'desc' => '3 - 5 ngày làm việc', 'fee' => 20000],
+                                    'nhanh' => ['id' => 'nhanh', 'name' => 'Giao hàng Nhanh', 'desc' => '1 - 2 ngày làm việc', 'fee' => 40000],
+                                    'sieutoc' => ['id' => 'sieutoc', 'name' => 'Giao Hỏa Tốc 2H', 'desc' => 'Nhận ngay trong 2 - 4 giờ', 'fee' => 65000]
+                                ];
+                                $curShipping = $selectedShipping ?? 'nhanh';
+                                foreach ($rates as $rKey => $rate): 
+                                    $isSelected = ($curShipping === $rKey);
+                                ?>
+                                <label class="shipping-option-card flex items-center justify-between cursor-pointer border p-3.5 rounded transition duration-200 <?= $isSelected ? 'border-primary bg-[#eaf4f6] shadow-sm' : 'border-gray-200 hover:border-gray-400 bg-white' ?>">
+                                    <div class="flex items-center">
+                                        <input type="radio" name="shipping" value="<?= $rate['id'] ?>" data-fee="<?= $rate['fee'] ?>" class="text-primary focus:ring-primary h-4 w-4" <?= $isSelected ? 'checked' : '' ?> onchange="updateShippingFee(this)">
+                                        <div class="ml-3">
+                                            <p class="text-sm font-bold text-gray-900"><?= $rate['name'] ?></p>
+                                            <p class="text-xs text-gray-500 mt-0.5"><?= $rate['desc'] ?></p>
+                                        </div>
+                                    </div>
+                                    <span class="text-sm font-bold text-primary font-mono"><?= number_format($rate['fee'], 0, ',', '.') ?> đ</span>
                                 </label>
-                                <label class="flex items-center cursor-pointer border border-gray-200 px-4 py-3 w-1/2">
-                                    <input type="radio" name="shipping" value="tieuchuan" class="peer">
-                                    <span class="ml-2 text-sm font-bold text-gray-600">Tiêu chuẩn</span>
-                                </label>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
@@ -142,12 +167,12 @@ require_once __DIR__ . '/partials/header.php';
                                 <span class="text-gray-900 font-bold"><?= number_format($total, 0, ',', '.') ?> đ</span>
                             </div>
                             <div class="flex justify-between text-sm mb-4">
-                                <span class="text-gray-900">Phí vận chuyển dự kiến</span>
-                                <span class="text-gray-900 font-bold">25.000 đ</span>
+                                <span class="text-gray-900">Phí vận chuyển</span>
+                                <span class="text-primary font-bold shipping-fee-val"><?= number_format($shippingFee ?? 40000, 0, ',', '.') ?> đ</span>
                             </div>
                             <div class="flex justify-between text-base border-t border-gray-200 pt-4">
                                 <span class="font-bold text-gray-900">Thành tiền</span>
-                                <span class="font-bold text-gray-900"><?= number_format($total + 25000, 0, ',', '.') ?> đ</span>
+                                <span class="font-bold text-gray-900 final-total-val"><?= number_format(($total ?? 0) + ($shippingFee ?? 40000), 0, ',', '.') ?> đ</span>
                             </div>
                         </div>
                     </div>
@@ -159,33 +184,32 @@ require_once __DIR__ . '/partials/header.php';
                     <!-- Step 2: Payment Methods -->
                     <div>
                         <h2 class="text-sm font-bold text-gray-900 mb-4 uppercase">Chọn phương thức thanh toán:</h2>
-                        <div class="space-y-3">
-                            <label class="flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
-                                <input type="radio" name="payment_method" value="credit_card" class="text-primary focus:ring-primary h-4 w-4">
-                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center"><svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg> Thẻ tín dụng/ghi nợ</span>
-                            </label>
-                            <label class="flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
-                                <input type="radio" name="payment_method" value="momo" class="text-primary focus:ring-primary h-4 w-4">
-                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center">
-                                    <!-- Momo mockup icon -->
-                                    <div class="w-5 h-5 bg-pink-500 rounded mr-2 flex items-center justify-center text-white text-[10px]">M</div>
-                                    Momo
-                                </span>
-                            </label>
-                            <label class="flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
-                                <input type="radio" name="payment_method" value="zalopay" class="text-primary focus:ring-primary h-4 w-4">
-                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center">
-                                    <div class="w-5 h-5 bg-blue-500 rounded mr-2 flex items-center justify-center text-white text-[10px]">Z</div>
-                                    ZaloPay
-                                </span>
-                            </label>
-                            <label class="flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
-                                <input type="radio" name="payment_method" value="bank_transfer" class="text-primary focus:ring-primary h-4 w-4">
-                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center"><svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg> Chuyển khoản</span>
-                            </label>
-                            <label class="flex items-center p-4 border border-primary bg-[#eaf4f6] cursor-pointer transition">
-                                <input type="radio" name="payment_method" value="cod" class="text-primary focus:ring-primary h-4 w-4" checked>
+                        <div class="space-y-3" id="paymentMethodsContainer">
+                            <label class="payment-method-card flex items-center p-4 border border-primary bg-[#eaf4f6] cursor-pointer transition">
+                                <input type="radio" name="payment_method" value="cod" class="text-primary focus:ring-primary h-4 w-4" checked onchange="updatePaymentMethod(this)">
                                 <span class="ml-3 text-sm font-bold text-primary flex items-center">Thanh toán khi nhận hàng (COD)</span>
+                            </label>
+                            <label class="payment-method-card flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
+                                <input type="radio" name="payment_method" value="bank_transfer" class="text-primary focus:ring-primary h-4 w-4" onchange="updatePaymentMethod(this)">
+                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center"><svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg> Chuyển khoản ngân hàng (QR Code)</span>
+                            </label>
+                            <label class="payment-method-card flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
+                                <input type="radio" name="payment_method" value="momo" class="text-primary focus:ring-primary h-4 w-4" onchange="updatePaymentMethod(this)">
+                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center">
+                                    <div class="w-5 h-5 bg-pink-500 rounded mr-2 flex items-center justify-center text-white text-[10px] font-bold">M</div>
+                                    Ví điện tử MoMo
+                                </span>
+                            </label>
+                            <label class="payment-method-card flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
+                                <input type="radio" name="payment_method" value="zalopay" class="text-primary focus:ring-primary h-4 w-4" onchange="updatePaymentMethod(this)">
+                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center">
+                                    <div class="w-5 h-5 bg-blue-500 rounded mr-2 flex items-center justify-center text-white text-[10px] font-bold">Z</div>
+                                    Ví điện tử ZaloPay
+                                </span>
+                            </label>
+                            <label class="payment-method-card flex items-center p-4 border border-gray-200 cursor-pointer hover:border-primary transition">
+                                <input type="radio" name="payment_method" value="credit_card" class="text-primary focus:ring-primary h-4 w-4" onchange="updatePaymentMethod(this)">
+                                <span class="ml-3 text-sm font-bold text-gray-700 flex items-center"><svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg> Thẻ tín dụng/ghi nợ (Visa/Mastercard)</span>
                             </label>
                         </div>
                     </div>
@@ -199,12 +223,12 @@ require_once __DIR__ . '/partials/header.php';
                                 <span class="text-gray-900 font-bold"><?= number_format($total, 0, ',', '.') ?> đ</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="text-gray-900">Phí vận chuyển dự kiến</span>
-                                <span class="text-gray-900 font-bold">25.000 đ</span>
+                                <span class="text-gray-900">Phí vận chuyển</span>
+                                <span class="text-primary font-bold shipping-fee-val"><?= number_format($shippingFee ?? 40000, 0, ',', '.') ?> đ</span>
                             </div>
                             <div class="flex justify-between text-base pt-2">
                                 <span class="font-bold text-gray-900">Thành tiền</span>
-                                <span class="font-bold text-gray-900"><?= number_format($total + 25000, 0, ',', '.') ?> đ</span>
+                                <span class="font-bold text-gray-900 final-total-val"><?= number_format(($total ?? 0) + ($shippingFee ?? 40000), 0, ',', '.') ?> đ</span>
                             </div>
                         </div>
 
@@ -216,7 +240,7 @@ require_once __DIR__ . '/partials/header.php';
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-primary text-white font-bold py-4 uppercase tracking-wider hover:bg-primary-dark transition text-sm">
+                        <button type="submit" class="w-full bg-primary text-white font-bold py-4 uppercase tracking-wider hover:bg-primary-dark transition text-sm shadow-md">
                             Hoàn tất đơn hàng
                         </button>
                     </div>
@@ -226,5 +250,61 @@ require_once __DIR__ . '/partials/header.php';
         </form>
     </div>
 </div>
+
+<script>
+    const SUB_TOTAL = <?= (float)($total ?? 0) ?>;
+
+    function formatVND(amount) {
+        return Number(amount).toLocaleString('vi-VN') + ' đ';
+    }
+
+    // Cập nhật phí vận chuyển và Thành tiền theo thời gian thực (Real-time live update)
+    function updateShippingFee(radioEl) {
+        const fee = parseFloat(radioEl.getAttribute('data-fee')) || 0;
+        const finalTotal = SUB_TOTAL + fee;
+
+        // Cập nhật text ở cả Mini Cart và Order Summary
+        document.querySelectorAll('.shipping-fee-val').forEach(el => {
+            el.innerText = formatVND(fee);
+        });
+        document.querySelectorAll('.final-total-val').forEach(el => {
+            el.innerText = formatVND(finalTotal);
+        });
+
+        // Cập nhật highlight viền card
+        document.querySelectorAll('.shipping-option-card').forEach(card => {
+            card.classList.remove('border-primary', 'bg-[#eaf4f6]', 'shadow-sm');
+            card.classList.add('border-gray-200', 'bg-white');
+        });
+        const currentCard = radioEl.closest('.shipping-option-card');
+        if (currentCard) {
+            currentCard.classList.remove('border-gray-200', 'bg-white');
+            currentCard.classList.add('border-primary', 'bg-[#eaf4f6]', 'shadow-sm');
+        }
+    }
+
+    // Cập nhật highlight phương thức thanh toán
+    function updatePaymentMethod(radioEl) {
+        document.querySelectorAll('.payment-method-card').forEach(card => {
+            card.classList.remove('border-primary', 'bg-[#eaf4f6]');
+            card.classList.add('border-gray-200');
+            const span = card.querySelector('span');
+            if (span) {
+                span.classList.remove('text-primary');
+                span.classList.add('text-gray-700');
+            }
+        });
+        const currentCard = radioEl.closest('.payment-method-card');
+        if (currentCard) {
+            currentCard.classList.remove('border-gray-200');
+            currentCard.classList.add('border-primary', 'bg-[#eaf4f6]');
+            const span = currentCard.querySelector('span');
+            if (span) {
+                span.classList.remove('text-gray-700');
+                span.classList.add('text-primary');
+            }
+        }
+    }
+</script>
 
 <?php require_once __DIR__ . '/partials/footer.php'; ?>

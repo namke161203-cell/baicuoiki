@@ -8,8 +8,7 @@ class AdminReportController extends BaseController {
 
     public function __construct() {
         if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'admin') {
-            header("Location: index.php?controller=Auth&action=login");
-            exit;
+            $this->redirect("index.php?controller=Auth&action=login");
         }
         $this->adminModel = new AdminModel();
     }

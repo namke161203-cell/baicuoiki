@@ -19,10 +19,19 @@
     </p>
 
     <?php if (isset($customerInfo)): ?>
-    <div class="bg-gray-50 border border-gray-200 p-6 max-w-md w-full mb-8 text-center text-sm">
-        <h3 class="font-bold text-gray-900 mb-2 uppercase tracking-wider">Địa chỉ giao hàng</h3>
-        <p class="text-gray-700 font-medium"><?= htmlspecialchars($customerInfo['name']) ?> - <?= htmlspecialchars($customerInfo['phone']) ?></p>
-        <p class="text-gray-600 mt-1"><?= htmlspecialchars($customerInfo['address']) ?></p>
+    <div class="bg-gray-50 border border-gray-200 p-6 max-w-md w-full mb-8 text-sm rounded-lg shadow-sm">
+        <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wider text-center border-b border-gray-200 pb-2">Thông tin giao hàng</h3>
+        <div class="space-y-1.5 text-left">
+            <p><span class="text-gray-500">Khách hàng:</span> <span class="font-bold text-gray-900"><?= htmlspecialchars($customerInfo['name']) ?></span> (<?= htmlspecialchars($customerInfo['phone']) ?>)</p>
+            <p><span class="text-gray-500">Địa chỉ:</span> <span class="text-gray-800"><?= htmlspecialchars($customerInfo['address']) ?></span></p>
+            <p><span class="text-gray-500">Thanh toán:</span> <span class="font-bold text-primary"><?= htmlspecialchars($customerInfo['payment_method'] ?? 'COD') ?></span></p>
+            <?php if (isset($finalTotal)): ?>
+            <p class="pt-2 border-t border-gray-200 flex justify-between font-bold text-base text-gray-900">
+                <span>Tổng tiền thanh toán:</span>
+                <span class="text-primary font-mono"><?= number_format($finalTotal, 0, ',', '.') ?> đ</span>
+            </p>
+            <?php endif; ?>
+        </div>
     </div>
     <?php endif; ?>
 

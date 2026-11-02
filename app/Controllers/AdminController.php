@@ -9,9 +9,9 @@ class AdminController extends BaseController {
     
     public function __construct() {
         // MIDDLEWARE: Chặn không cho người chưa đăng nhập hoặc không phải admin vào
-        if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
-            header("Location: index.php?controller=Auth&action=login");
-            exit;
+        $role = $_SESSION['user_role'] ?? $_SESSION['role'] ?? '';
+        if (!isset($_SESSION['user_id']) || $role !== 'admin') {
+            $this->redirect("index.php?controller=Auth&action=login");
         }
     }
 
@@ -35,22 +35,28 @@ class AdminController extends BaseController {
         // Dữ liệu cho tất cả các tab chuyển đổi mượt mà (SPA)
         $products = $productModel->getAllProducts();
         $categories = $productModel->getAllCategories();
+        $productKPIs = $productModel->getProductKPIs();
         $orders = $orderModel->getAllOrders();
+        $orderStats = $orderModel->getOrderStats();
         $customers = $userModel->getAllCustomers();
         $coupons = $adminModel->getAllCoupons();
         $report = $adminModel->getReportOverview();
         $ads = $adminModel->getAllAds();
+        $executiveStats = $adminModel->getExecutiveDashboardStats();
         
         $activeTab = $_GET['tab'] ?? 'dashboard';
 
         $this->render('admin/dashboard', [
-            'title' => 'hquie Cadra Studio - Executive Dashboard',
+            'title' => 'Cadra Studio - Tổng Quan Hệ Thống',
             'stats' => $stats,
+            'executiveStats' => $executiveStats,
             'latestOrders' => $latestOrders,
             'bestSellers' => $bestSellers,
             'products' => $products,
             'categories' => $categories,
+            'productKPIs' => $productKPIs,
             'orders' => $orders,
+            'orderStats' => $orderStats,
             'customers' => $customers,
             'coupons' => $coupons,
             'report' => $report,

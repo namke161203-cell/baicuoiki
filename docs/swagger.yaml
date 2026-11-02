@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: Clothing Store API Contract
+  description: >
+    Tài liệu đặc tả hợp đồng giao tiếp API (API Contract) cho hệ thống Website Bán Hàng PHP MVC.
+    Được thiết kế theo tiêu chuẩn API Contract Skill & Backend Engineer Skill.
+  version: 1.0.0
+servers:
+  - url: http://localhost/duan
+    description: Máy chủ XAMPP Local Development
+
+tags:
+  - name: Cart & Checkout
+    description: Quản lý giỏ hàng và đặt hàng (AJAX & Form)
+  - name: Products
+    description: Danh mục và chi tiết sản phẩm thời trang
+  - name: Authentication
+    description: Xác thực người dùng, đăng ký và đăng nhập
+
+paths:
+  /index.php?controller=Cart&action=ajaxAdd:
+    post:
+      tags:
+        - Cart & Checkout
+      summary: Thêm sản phẩm vào giỏ hàng (AJAX Realtime)
+      description: Nhận thông tin sản phẩm và cập nhật vào phiên làm việc (Session) mà không cần reload trang.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddToCartRequest'
+      responses:
+        '200':
+          description: Thêm vào giỏ hàng thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddToCartSuccessResponse'
+        '400':
+          description: Dữ liệu không hợp lệ hoặc số lượng tồn kho không đủ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Không tìm thấy sản phẩm trong hệ thống
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /index.php?controller=Cart&action=ajaxCount:
+    get:
+      tags:
+        - Cart & Checkout
+      summary: Lấy tổng số lượng mặt hàng trong giỏ
+      responses:
+        '200':
+          description: Trả về số lượng tổng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  total_items:
+                    type: integer
+                    example: 3
+
+  /index.php?controller=Cart&action=checkout:
+    post:
+      tags:
+        - Cart & Checkout
+      summary: Gửi thông tin thanh toán và tạo đơn hàng
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - fullname
+                - phone
+                - address
+                - city
+              properties:
+                fullname:
+                  type: string
+                  example: Nguyễn Văn A
+                phone:
+                  type: string
+                  example: "0912345678"
+                address:
+                  type: string
+                  example: 123 Đường Cầu Giấy
+                city:
+                  type: string
+                  example: Hà Nội
+      responses:
+        '302':
+          description: Đặt hàng thành công và chuyển hướng đến trang checkout_success
+        '200':
+          description: Đặt hàng thất bại (hiển thị form kèm thông báo lỗi)
+
+  /index.php?controller=Auth&action=login:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng nhập tài khoản
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@clothing.local
+                password:
+                  type: string
+                  format: password
+                  example: Secret@123
+      responses:
+        '302':
+          description: Đăng nhập thành công và lưu phiên làm việc (Session)
+        '200':
+          description: Sai mật khẩu hoặc tài khoản không tồn tại
+
+components:
+  schemas:
+    AddToCartRequest:
+      type: object
+      required:
+        - product_id
+        - size
+        - color
+        - quantity
+      properties:
+        product_id:
+          type: integer
+          example: 1
+        size:
+          type: string
+          example: "L"
+        color:
+          type: string
+          example: "Đen"
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+
+    AddToCartSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Đã thêm "Áo Khoác Bomber Lót Dù Cao Cấp" vào giỏ hàng!
+        cart_key:
+          type: string
+          example: "1_Đen_L"
+        total_items:
+          type: integer
+          example: 2
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Thông tin sản phẩm hoặc số lượng không hợp lệ.
